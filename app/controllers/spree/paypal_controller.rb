@@ -1,5 +1,5 @@
 module Spree
-  class PaypalController < Spree::StoreController
+  class PaypalController < StoreController
     def express
       # TODO: support adjustments
       # Check out the old spree_paypal_express for how it does this
@@ -32,7 +32,7 @@ module Spree
     def confirm
       details = provider.details_for(params[:token])
       payer_id = details.payer_id
-      # TODO: For 2.1.0, make this display_item_total.cents 
+      # TODO: For 2.1.0, make this display_item_total.cents
       response = provider.purchase(current_order.display_item_total.money.cents, {
         ip: request.remote_addr,
         token: params[:token],
