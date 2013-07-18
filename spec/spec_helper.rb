@@ -1,11 +1,4 @@
-require 'simplecov'
-SimpleCov.start do
-  add_filter '/spec/'
-  add_group 'Controllers', 'app/controllers'
-  add_group 'Models', 'app/models'
-  add_group 'Libraries', 'lib'
-end
-
+# Configure Rails Environment
 ENV['RAILS_ENV'] = 'test'
 
 require File.expand_path('../dummy/config/environment.rb',  __FILE__)
@@ -13,6 +6,8 @@ require File.expand_path('../dummy/config/environment.rb',  __FILE__)
 require 'rspec/rails'
 require 'database_cleaner'
 require 'ffaker'
+require 'capybara/rspec'
+require 'pry'
 
 Dir[File.join(File.dirname(__FILE__), 'support/**/*.rb')].each { |f| require f }
 

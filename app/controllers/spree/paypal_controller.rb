@@ -21,6 +21,7 @@ module Spree
         locale: I18n.locale.to_s.sub(/-/, '_'),
         brand_name: Spree::Config[:site_name],
         address: address_options,
+        address_override: true,
         header_image: 'http://teclacolorida.com/assets/images/logos/schoooools.png',
         allow_guest_checkout: 'true',   #payment with credit card for non PayPal users
         items: items
