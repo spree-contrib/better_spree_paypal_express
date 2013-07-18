@@ -17,7 +17,7 @@ module Spree
         ip: request.remote_ip,
         return_url: confirm_paypal_url(:payment_method_id => params[:payment_method_id]),
         cancel_return_url: cancel_paypal_url,
-        currency: Spree::Config[:currency],
+        currency: current_order.currency,
         locale: I18n.locale.to_s.sub(/-/, '_'),
         brand_name: Spree::Config[:site_name],
         address: address_options,
@@ -25,7 +25,7 @@ module Spree
         allow_guest_checkout: 'true',   #payment with credit card for non PayPal users
         items: items
       )
-      
+
       redirect_to provider.redirect_url_for(response.token)
     end
 
@@ -37,7 +37,7 @@ module Spree
         ip: request.remote_addr,
         token: params[:token],
         payer_id: payer_id,
-        currency: Spree::Config[:currency]
+        currency: current_order.currency
       })
       # TODO: Add payment to order
     end
