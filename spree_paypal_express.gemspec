@@ -1,18 +1,24 @@
-# encoding: UTF-8
+# coding: utf-8
+lib = File.expand_path('../lib/', __FILE__)
+$:.unshift lib unless $:.include?(lib)
+
+require 'spree_paypal_express/version'
+
 Gem::Specification.new do |s|
   s.platform    = Gem::Platform::RUBY
   s.name        = 'spree_paypal_express'
-  s.version     = '2.0.3'
-  s.summary     = 'TODO: Add gem summary here'
-  s.description = 'TODO: Add (optional) gem description here'
+  s.version     = SpreePayPalExpress::VERSION
+  s.summary     = 'Adds PayPal Express as a Payment Method to Spree Commerce'
+  s.description = s.summary
   s.required_ruby_version = '>= 1.9.3'
 
-  # s.author    = 'You'
-  # s.email     = 'you@example.com'
-  # s.homepage  = 'http://www.spreecommerce.com'
+  s.author       = 'Spree Commerce'
+  s.email        = 'gems@spreecommerce.com'
+  s.homepage     = 'http://www.spreecommerce.com'
+  s.license      = %q{BSD-3}
 
-  #s.files       = `git ls-files`.split("\n")
-  #s.test_files  = `git ls-files -- {test,spec,features}/*`.split("\n")
+  s.files        = `git ls-files`.split("\n")
+  s.test_files   = `git ls-files -- spec/*`.split("\n")
   s.require_path = 'lib'
   s.requirements << 'none'
 
