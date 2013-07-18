@@ -7,12 +7,7 @@ script:
   - bundle exec rspec spec
 notifications:
   email:
-    - gems@spreecommerce.com
-  irc:
-    use_notice: true
-    skip_join: true
-    channels:
-      - "irc.freenode.org#spree"
+    - ryan@spreecommerce.com
 rvm:
   - 1.9.3
   - 2.0.0
