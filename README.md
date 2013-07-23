@@ -6,7 +6,7 @@ This is a "re-do" of the official [spree_paypal_express][4] extension. The old e
 
 Please attempt to use this extension *only in development* and report issues.
 
-This blog post was a godsend: http://codecube.teclacolorida.com/2013/01/21/integration-of-paypal-express-checkout-using-active-merchant/.
+Behind-the-scenes, this extension uses [PayPal's Merchant Ruby SDK](https://github.com/paypal/merchant-sdk-ruby).
 
 ## Contributing
 
@@ -29,7 +29,7 @@ Starting point:
 * Fork the repo
 * Clone your repo
 * Run `bundle install`
-* Run `bundle exec rake test_app` to create the test application in `spec/test_app`
+* Run `bundle exec rake test_app` to create the test application in `spec/dummy`
 * Make your changes
 * Ensure specs pass by running `bundle exec rspec spec`
 * Submit your pull request
