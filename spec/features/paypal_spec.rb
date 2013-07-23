@@ -37,15 +37,12 @@ describe "PayPal", :js => true do
     # Delivery step doesn't require any action
     click_button "Save and Continue"
     find("#paypal_button").click
-    fill_in "cc_number", :with => "5517081817509347"
-    fill_in "expdate_month", :with => "7"
-    fill_in "expdate_year", :with => "18"
-    fill_in "cvv2_number", :with => "123"
-    fill_in "H_PhoneNumberUS", :with => "301-444-5002"
-    fill_in "email-address", :with => "pp@ryanbigg.com"
-    click_button "Review and Continue"
-    # TODO: Maybe verify information at this step?
-    click_button "Continue"
+    find("#loadLogin").click
+    fill_in "login_email", :with => "pp@spreecommerce.com"
+    fill_in "login_password", :with => "thequickbrownfox"
+    click_button "Log In"
+    find("#continue_abovefold").click   # Because there's TWO continue buttons.
+    page.should have_content("Your order has been processed successfully")
   end
 
   # Enter fake address information, check for an error.
