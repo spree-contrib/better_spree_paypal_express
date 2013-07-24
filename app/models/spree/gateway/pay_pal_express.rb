@@ -5,7 +5,7 @@ module Spree
     preference :password, :string
     preference :signature, :string
 
-    attr_accessible :preferred_login, :preferred_password, :preferred_signature
+    attr_accessible :preferred_login, :preferred_password, :preferred_signature, :preferred_mode
 
     def provider_class
       PayPal::SDK::Merchant::API.new
@@ -13,7 +13,7 @@ module Spree
 
     def provider
       PayPal::SDK.configure(
-        :mode      => "sandbox",  # Set "live" for production
+        :mode      => preferred_mode.present? ? preferred_mode : "sandbox",
         :username  => preferred_login,
         :password  => preferred_password,
         :signature => preferred_signature)
