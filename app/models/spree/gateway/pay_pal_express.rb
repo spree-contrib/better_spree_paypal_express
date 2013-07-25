@@ -9,11 +9,11 @@ module Spree
     attr_accessible :preferred_login, :preferred_password, :preferred_signature
 
     def provider_class
-      PayPal::SDK::Merchant::API.new
+      ::PayPal::SDK::Merchant::API.new
     end
 
     def provider
-      PayPal::SDK.configure(
+      ::PayPal::SDK.configure(
         :mode      => preferred_server.present? ? preferred_server : "sandbox",
         :username  => preferred_login,
         :password  => preferred_password,
