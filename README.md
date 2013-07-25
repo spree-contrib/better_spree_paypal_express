@@ -30,7 +30,7 @@ In Spree, go to the admin backend, click "Configuration" and then "Payment Metho
 
 #### PayPal
 
-TODO
+Sign in to PayPal, then click "Profile" and then (under "Account Information" on the left), click "API Access". On this page, select "Option 2" and click "View API Signature". The username, password and signature will be displayed on this screen.
 
 #### Spree Setup
 
