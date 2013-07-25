@@ -74,7 +74,8 @@ module Spree
     end
 
     def cancel
-      binding.pry
+      flash[:notice] = "Don't want to use PayPal? No problems."
+      redirect_to checkout_state_path(current_order.state)
     end
 
     private
