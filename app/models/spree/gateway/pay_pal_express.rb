@@ -51,7 +51,12 @@ module Spree
           def authorization; nil; end
         end.new
       else
-        # TODO: Handle a fail case.
+        class << pp_response
+          def to_s
+            errors.map(&:long_message).join(" ")
+          end
+        end
+        pp_response
       end
     end
   end
