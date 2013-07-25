@@ -46,7 +46,10 @@ module Spree
       pp_response = provider.do_express_checkout_payment(pp_request)
       if pp_response.success?
         # This is rather hackish, required for payment/processing handle_response code.
-        return Struct.new(:success?, :authorization).new(true, nil)
+        Class.new do
+          def success?; true; end
+          def authorization; nil; end
+        end.new
       else
         # TODO: Handle a fail case.
       end
