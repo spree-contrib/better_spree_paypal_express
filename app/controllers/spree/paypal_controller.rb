@@ -49,7 +49,7 @@ module Spree
       if pp_response.success?
         redirect_to provider.express_checkout_url(pp_response)
       else
-        flash[:notice] = "PayPal failed. #{pp_response.errors}"
+        flash[:notice] = "PayPal failed. #{pp_response.errors.map(&:long_message).join(" ")}"
         redirect_to checkout_state_path(:payment)
       end
     end
