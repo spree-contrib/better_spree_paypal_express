@@ -13,13 +13,17 @@ module Spree
         }
       end
 
-      current_order.adjustments.credit.eligible.each do |credit|
+      tax_adjustments = current_order.adjustments.tax
+      shipping_adjustments = current_order.adjustments.shipping
+
+      current_order.adjustments.eligible.each do |adjustment|
+        next if (tax_adjustments + shipping_adjustments).include?(adjustment)
         items << {
-          :Name => credit.label,
+          :Name => adjustment.label,
           :Quantity => 1,
           :Amount => {
             :currencyID => current_order.currency,
-            :value => credit.amount
+            :value => adjustment.amount
           }
         }
       end
