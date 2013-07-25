@@ -4,8 +4,9 @@ module Spree
     preference :login, :string
     preference :password, :string
     preference :signature, :string
+    preference :server, :string, default: 'sandbox'
 
-    attr_accessible :preferred_login, :preferred_password, :preferred_signature, :preferred_mode
+    attr_accessible :preferred_login, :preferred_password, :preferred_signature
 
     def provider_class
       PayPal::SDK::Merchant::API.new
@@ -13,7 +14,7 @@ module Spree
 
     def provider
       PayPal::SDK.configure(
-        :mode      => preferred_mode.present? ? preferred_mode : "sandbox",
+        :mode      => preferred_server.present? ? preferred_server : "sandbox",
         :username  => preferred_login,
         :password  => preferred_password,
         :signature => preferred_signature)
