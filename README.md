@@ -22,10 +22,6 @@ Behind-the-scenes, this extension uses [PayPal's Merchant Ruby SDK](https://gith
 
         bundle exec rails g spree_paypal_express:install
 
-Then install it using this command:
-
-    rails g spree_paypal_express:install
-
 ### Sandbox Setup
 
 #### PayPal
