@@ -46,6 +46,16 @@ If you are unable to find it, then follow [PayPal's own documentation](https://d
 
 Same as sandbox setup, but change "Server" from "sandbox" to "live".
 
+## Caveats
+
+*Caveat venditor*
+
+Paypal will refuse any order with a zero cost item.
+Any such item will be skipped and not displayed.
+
+PayPal will also refuse any order where item total (before taxes and shipping costs) is zero.
+In this case the PayPal checkout page will simply display "Current order".
+
 ## Contributing
 
 In the spirit of [free software][1], **everyone** is encouraged to help improve this project.
