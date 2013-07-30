@@ -14,6 +14,10 @@ Add this extension to your Gemfile with this line:
 
     gem 'spree_paypal_express', :github => "radar/better_spree_paypal_express", :branch => "2-0-stable"
 
+Then install it using this command:
+
+    rails g spree_paypal_express:install
+
 ### Sandbox Setup
 
 #### PayPal
