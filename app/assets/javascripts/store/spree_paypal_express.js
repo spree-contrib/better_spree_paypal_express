@@ -2,7 +2,7 @@
 
 SpreePaypalExpress = {
   hidePaymentSaveAndContinueButton: function(paymentMethod) {
-    if (paymentMethod.value == SpreePaypalExpress.paymentMethodID) {
+    if (SpreePaypalExpress.paymentMethodID && paymentMethod.value == SpreePaypalExpress.paymentMethodID) {
       $('.continue').hide();
     } else {
       $('.continue').show();
