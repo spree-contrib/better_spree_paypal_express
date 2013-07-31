@@ -22,10 +22,6 @@ Behind-the-scenes, this extension uses [PayPal's Merchant Ruby SDK](https://gith
 
         bundle exec rails g spree_paypal_express:install
 
-Then install it using this command:
-
-    rails g spree_paypal_express:install
-
 ### Sandbox Setup
 
 #### PayPal
@@ -49,6 +45,16 @@ If you are unable to find it, then follow [PayPal's own documentation](https://d
 #### Spree Setup
 
 Same as sandbox setup, but change "Server" from "sandbox" to "live".
+
+## Caveats
+
+*Caveat venditor*
+
+Paypal will refuse any order with a zero cost item.
+Any such item will be skipped and not displayed.
+
+PayPal will also refuse any order where item total (before taxes and shipping costs) is zero.
+In this case the PayPal checkout page will simply display "Current order".
 
 ## Contributing
 
