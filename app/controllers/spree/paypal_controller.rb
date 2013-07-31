@@ -27,33 +27,32 @@ module Spree
           }
         }
       end
+
+      # Because PayPal doesn't accept $0 items at all.
+      # See #10
+      # https://cms.paypal.com/uk/cgi-bin/?cmd=_render-content&content_ID=developer/e_howto_api_ECCustomizing
+      # "It can be a positive or negative value but not zero."
+      items.reject! do |item|
+        item[:Amount][:value].zero?
+      end
+
       pp_request = provider.build_set_express_checkout({
         :SetExpressCheckoutRequestDetails => {
           :ReturnURL => confirm_paypal_url(:payment_method_id => params[:payment_method_id]),
           :CancelURL =>  cancel_paypal_url,
-          :PaymentDetails => [{
-            :OrderTotal => {
-              :currencyID => current_order.currency,
-              :value => current_order.total },
-            :ItemTotal => {
-              :currencyID => current_order.currency,
-              :value => items.sum { |i| i[:Quantity] * i[:Amount][:value] } },
-            :ShippingTotal => {
-              :currencyID => current_order.currency,
-              :value => current_order.ship_total },
-            :TaxTotal => {
-              :currencyID => current_order.currency,
-              :value => current_order.tax_total },
-            :ShipToAddress => address_options,
-            :PaymentDetailsItem => items,
-            :ShippingMethod => "Shipping Method Name Goes Here",
-            :PaymentAction => "Sale",
-      }]}})
-      pp_response = provider.set_express_checkout(pp_request)
-      if pp_response.success?
-        redirect_to provider.express_checkout_url(pp_response)
-      else
-        flash[:notice] = "PayPal failed. #{pp_response.errors.map(&:long_message).join(" ")}"
+          :PaymentDetails => [payment_details(items)]
+        }})
+
+      begin
+        pp_response = provider.set_express_checkout(pp_request)
+        if pp_response.success?
+          redirect_to provider.express_checkout_url(pp_response)
+        else
+          flash[:error] = "PayPal failed. #{pp_response.errors.map(&:long_message).join(" ")}"
+          redirect_to checkout_state_path(:payment)
+        end
+      rescue SocketError
+        flash[:error] = "Could not connect to PayPal."
         redirect_to checkout_state_path(:payment)
       end
     end
@@ -62,8 +61,8 @@ module Spree
       order = current_order
       order.payments.create!({
         :source => Spree::PaypalExpressCheckout.create({
-            :token => params[:token],
-            :payer_id => params[:PayerID]
+          :token => params[:token],
+          :payer_id => params[:PayerID]
         }, :without_protection => true),
         :amount => order.total,
         :payment_method => payment_method
@@ -90,6 +89,43 @@ module Spree
 
     def provider
       payment_method.provider
+    end
+
+    def payment_details items
+      item_sum = items.sum { |i| i[:Quantity] * i[:Amount][:value] }
+      if item_sum.zero?
+        # Paypal does not support no items or a zero dollar ItemTotal
+        # This results in the order summary being simply "Current purchase"
+        {
+          :OrderTotal => {
+            :currencyID => current_order.currency,
+            :value => current_order.total
+          }
+        }
+      else
+        {
+          :OrderTotal => {
+            :currencyID => current_order.currency,
+            :value => current_order.total
+          },
+          :ItemTotal => {
+            :currencyID => current_order.currency,
+            :value => item_sum
+          },
+          :ShippingTotal => {
+            :currencyID => current_order.currency,
+            :value => current_order.ship_total
+          },
+          :TaxTotal => {
+            :currencyID => current_order.currency,
+            :value => current_order.tax_total
+          },
+          :ShipToAddress => address_options,
+          :PaymentDetailsItem => items,
+          :ShippingMethod => "Shipping Method Name Goes Here",
+          :PaymentAction => "Sale"
+        }
+      end
     end
 
     def address_options
