@@ -38,7 +38,7 @@ module Spree
           :PaymentDetails => [{
             :OrderTotal => {
               :currencyID => Spree::Config[:currency],
-              :value => amount }
+              :value => ::Money.new(amount, Spree::Config[:currency]).to_s }
           }]
         }
       })
