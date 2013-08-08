@@ -46,6 +46,8 @@ describe "PayPal", :js => true do
     click_button "Log In"
     find("#continue_abovefold").click   # Because there's TWO continue buttons.
     page.should have_content("Your order has been processed successfully")
+
+    Spree::Payment.last.source.transaction_id.should_not be_blank
   end
 
   it "includes adjustments in PayPal summary" do
