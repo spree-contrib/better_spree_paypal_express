@@ -1,0 +1,19 @@
+<div id="checkout" data-hook>
+  <%= render :partial => 'spree/shared/error_messages', :locals => { :target => @order } %>
+
+  <div class="row" data-hook="checkout_header">
+    <h1 class="columns three alpha" data-hook="checkout_title"><%= t(:checkout) %></h1>
+  </div>
+
+  <p>
+    <%= raw t(:order_not_yet_placed) %>
+  </p>
+
+  <div class="row" data-hook="checkout_content">
+      <hr class="clear"/>
+      <div class="form-buttons">
+      </div>
+
+
+  </div>
+</div>

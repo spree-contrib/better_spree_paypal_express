@@ -6,7 +6,8 @@ module Spree
     preference :signature, :string
     preference :server, :string, default: 'sandbox'
 
-    attr_accessible :preferred_login, :preferred_password, :preferred_signature
+    #Commented out for Rails4 compatibility
+    #attr_accessible :preferred_login, :preferred_password, :preferred_signature
 
     def provider_class
       ::PayPal::SDK::Merchant::API.new
@@ -14,10 +15,10 @@ module Spree
 
     def provider
       ::PayPal::SDK.configure(
-        :mode      => preferred_server.present? ? preferred_server : "sandbox",
-        :username  => preferred_login,
-        :password  => preferred_password,
-        :signature => preferred_signature)
+          :mode      => preferred_server.present? ? preferred_server : "sandbox",
+          :username  => preferred_login,
+          :password  => preferred_password,
+          :signature => preferred_signature)
       provider_class
     end
 
@@ -31,17 +32,17 @@ module Spree
 
     def purchase(amount, express_checkout, gateway_options={})
       pp_request = provider.build_do_express_checkout_payment({
-        :DoExpressCheckoutPaymentRequestDetails => {
+      :DoExpressCheckoutPaymentRequestDetails => {
           :PaymentAction => "Sale",
           :Token => express_checkout.token,
           :PayerID => express_checkout.payer_id,
           :PaymentDetails => [{
-            :OrderTotal => {
-              :currencyID => Spree::Config[:currency],
-              :value => ::Money.new(amount, Spree::Config[:currency]).to_s }
+              :OrderTotal => {
+                  :currencyID => Spree::Config[:currency],
+                  :value => ::Money.new(amount, Spree::Config[:currency]).to_s }
           }]
-        }
-      })
+      }
+  })
 
       pp_response = provider.do_express_checkout_payment(pp_request)
       if pp_response.success?
