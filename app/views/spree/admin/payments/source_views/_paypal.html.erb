@@ -1,0 +1,35 @@
+<fieldset data-hook="paypal">
+  <legend align="center"><%= Spree.t(:transaction, :scope => :paypal) %></legend>
+
+  <div class="row">
+    <div class="alpha six columns">
+      <dl>
+        <dt><%= Spree.t(:payer_id, :scope => :paypal) %>:</dt>
+        <dd><%= payment.source.payer_id %></dd>
+
+        <dt><%= Spree.t(:token, :scope => :paypal) %>:</dt>
+        <dd><%= payment.source.token %></dd>
+
+        <dt><%= Spree.t(:transaction_id) %>:</dt>
+        <dd><%= payment.source.transaction_id %></dd>
+      </dl>
+    </div>
+
+    <% if payment.source.state != 'refunded' %>
+      <%= button_link_to Spree.t('actions.refund', :scope => :paypal), spree.paypal_refund_admin_order_payment_path(@order, payment), :icon => 'icon-dollar' %>
+    <% else %>
+      <div class="alpha six columns">
+        <dl>
+          <dt><%= Spree.t(:state, :scope => :paypal) %>:</dt>
+          <dd><%= payment.source.state.titleize %></dd>
+
+          <dt><%= Spree.t(:refunded_at, :scope => :paypal) %>:</dt>
+          <dd><%= pretty_time(payment.source.refunded_at) %></dd>
+
+          <dt><%= Spree.t(:refund_transaction_id, :scope => :paypal) %>:</dt>
+          <dd><%= payment.source.refund_transaction_id %></dd>
+        </dl>
+      </div>
+    <% end %>
+  </div>
+</fieldset>

@@ -21,6 +21,7 @@ require 'spree_paypal_express/factories'
 RSpec.configure do |config|
   config.include FactoryGirl::Syntax::Methods
   config.include Spree::TestingSupport::UrlHelpers
+  config.include Spree::TestingSupport::AuthorizationHelpers::Controller
 
   config.mock_with :rspec
   config.color = true

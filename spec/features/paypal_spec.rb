@@ -26,6 +26,14 @@ describe "PayPal", :js => true do
       fill_in "Phone", :with => "555-AME-RICA"
     end
   end
+
+  def switch_to_paypal_login
+    # If you go through a payment once in the sandbox, it remembers your preferred setting.
+    # It defaults to the *wrong* setting for the first time, so we need to have this method.
+    unless page.has_selector?("#login_email")
+      find("#loadLogin").click
+    end
+  end
   it "pays for an order successfully" do
     visit spree.root_path
     click_link 'iPad'
@@ -40,7 +48,7 @@ describe "PayPal", :js => true do
     # Delivery step doesn't require any action
     click_button "Save and Continue"
     find("#paypal_button").click
-    find("#loadLogin").click
+    switch_to_paypal_login
     fill_in "login_email", :with => "pp@spreecommerce.com"
     fill_in "login_password", :with => "thequickbrownfox"
     click_button "Log In"
@@ -164,6 +172,73 @@ describe "PayPal", :js => true do
       click_button "Save and Continue"
       find("#paypal_button").click
       page.should have_content("PayPal failed. Security header is not valid")
+    end
+  end
+
+  context "as an admin" do
+    stub_authorization!
+
+    context "refunding payments" do
+      before do
+        visit spree.root_path
+        click_link 'iPad'
+        click_button 'Add To Cart'
+        click_button 'Checkout'
+        within("#guest_checkout") do
+          fill_in "Email", :with => "test@example.com"
+          click_button 'Continue'
+        end
+        fill_in_billing
+        click_button "Save and Continue"
+        # Delivery step doesn't require any action
+        click_button "Save and Continue"
+        find("#paypal_button").click
+        switch_to_paypal_login
+        fill_in "login_email", :with => "pp@spreecommerce.com"
+        fill_in "login_password", :with => "thequickbrownfox"
+        click_button "Log In"
+        find("#continue_abovefold").click   # Because there's TWO continue buttons.
+        page.should have_content("Your order has been processed successfully")
+
+        visit '/admin'
+        click_link Spree::Order.last.number
+        click_link "Payments"
+        click_link "PayPal"
+        click_link "Refund"
+      end
+
+      it "can refund payments fully" do
+        click_button "Refund"
+        page.should have_content("PayPal refund successful")
+
+        payment = Spree::Payment.last
+        source = payment.source
+        source.refund_transaction_id.should_not be_blank
+        source.refunded_at.should_not be_blank
+        source.state.should eql("refunded")
+        source.refund_type.should eql("Full")
+      end
+
+      it "can refund payments partially" do
+        payment = Spree::Payment.last
+        # Take a dollar off, which should cause refund type to be...
+        fill_in "Amount", :with => payment.amount - 1
+        click_button "Refund"
+        page.should have_content("PayPal refund successful")
+
+        source = payment.source
+        source.refund_transaction_id.should_not be_blank
+        source.refunded_at.should_not be_blank
+        source.state.should eql("refunded")
+        # ... a partial refund
+        source.refund_type.should eql("Partial")
+      end
+
+      it "errors when given an invalid refund amount" do
+        fill_in "Amount", :with => "lol"
+        click_button "Refund"
+        page.should have_content("PayPal refund unsuccessful (The partial refund amount is not valid)")
+      end
     end
   end
 end
