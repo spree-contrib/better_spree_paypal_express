@@ -7,7 +7,7 @@ SpreePaypalExpress = {
       $('#payment_amount').attr('disabled', 'disabled');
       $('button[type="submit"]').attr('disabled', 'disabled');
       $('#paypal-warning').show();
-    } else {
+    } else if (SpreePaypalExpress.paymentMethodID) {
       $('.payment-method-settings').children().show();
       $('button[type=submit]').attr('disabled', '');
       $('#payment_amount').attr('disabled', '')
