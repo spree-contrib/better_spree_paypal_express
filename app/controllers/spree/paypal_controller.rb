@@ -63,10 +63,10 @@ module Spree
         :source => Spree::PaypalExpressCheckout.create({
           :token => params[:token],
           :payer_id => params[:PayerID]
-        }, :without_protection => true),
+        }),
         :amount => order.total,
         :payment_method => payment_method
-      }, :without_protection => true)
+      })
       order.next
       if order.complete?
         flash.notice = Spree.t(:order_processed_successfully)
