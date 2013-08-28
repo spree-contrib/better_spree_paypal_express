@@ -32,8 +32,10 @@ describe Spree::Gateway::PayPalExpress do
           ]
         }
       })
-      response = double('pp_response', :success? => true) 
+      response = double('pp_response', :success? => true)
       provider.should_receive(:do_express_checkout_payment).and_return(response)
+      response.stub_chain(:do_express_checkout_payment_response_details, :payment_info, :first, :transaction_id).and_return("ABCD1234")
+      payment.source.should_receive(:update_column).with(:transaction_id, "ABCD1234")
       payment.purchase!
       # lambda { payment.purchase! }.should_not raise_error
     end
@@ -41,7 +43,7 @@ describe Spree::Gateway::PayPalExpress do
     # Test for #4
     it "fails" do
       provider.should_receive(:build_do_express_checkout_payment)
-      response = double('pp_response', :success? => false, 
+      response = double('pp_response', :success? => false,
                           :errors => [double('pp_response_error', :long_message => "An error goes here.")])
       provider.should_receive(:do_express_checkout_payment).and_return(response)
       lambda { payment.purchase! }.should raise_error(Spree::Core::GatewayError, "An error goes here.")
