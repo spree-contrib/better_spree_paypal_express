@@ -1,10 +1,6 @@
 # Spree PayPal Express
 
-## THIS IS NOT PRODUCTION READY.
-
 This is a "re-do" of the official [spree_paypal_express][4] extension. The old extension is extremely hard to maintain and complex.
-
-This extension purposely only uses PayPal's sandbox and never the live system. Please attempt to use this extension *only in development* and report issues.
 
 Behind-the-scenes, this extension uses [PayPal's Merchant Ruby SDK](https://github.com/paypal/merchant-sdk-ruby).
 
