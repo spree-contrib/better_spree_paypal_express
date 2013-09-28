@@ -6,8 +6,12 @@ module Spree
     preference :signature, :string
     preference :server, :string, default: 'sandbox'
 
+    def supports?(source)
+      true
+    end
+
     def provider_class
-      ::PayPal::SDK::Merchant::API.new
+      ::PayPal::SDK::Merchant::API
     end
 
     def provider
@@ -16,7 +20,7 @@ module Spree
         :username  => preferred_login,
         :password  => preferred_password,
         :signature => preferred_signature)
-      provider_class
+      provider_class.new
     end
 
     def auto_capture?
