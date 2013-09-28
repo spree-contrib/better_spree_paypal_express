@@ -8,8 +8,12 @@ module Spree
 
     attr_accessible :preferred_login, :preferred_password, :preferred_signature
 
+    def supports?(source)
+      true
+    end
+
     def provider_class
-      ::PayPal::SDK::Merchant::API.new
+      ::PayPal::SDK::Merchant::API
     end
 
     def provider
@@ -18,7 +22,7 @@ module Spree
         :username  => preferred_login,
         :password  => preferred_password,
         :signature => preferred_signature)
-      provider_class
+      provider_class.new
     end
 
     def auto_capture?
