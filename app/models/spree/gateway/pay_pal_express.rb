@@ -89,7 +89,7 @@ module Spree
           :refund_transaction_id => refund_transaction_response.RefundTransactionID,
           :state => "refunded",
           :refund_type => refund_type
-        }, :without_protection => true)
+        } )
       end
       refund_transaction_response
     end
