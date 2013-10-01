@@ -42,7 +42,14 @@ module Spree
           :PaymentDetails => [{
             :OrderTotal => {
               :currencyID => Spree::Config[:currency],
-              :value => ::Money.new(amount, Spree::Config[:currency]).to_s }
+              # gsub is here because PayPal fails to acknowledge 
+              # that some people like their currencies written as:
+              # 21,99
+              # As opposed to:
+              # 21.99
+              # The international payments company fails to handle
+              # international payment amounts. SMH.
+              :value => ::Money.new(amount, Spree::Config[:currency]).to_s.gsub(',', '.') }
           }]
         }
       })
