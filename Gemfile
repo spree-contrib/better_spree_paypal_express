@@ -11,6 +11,8 @@ group :test do
  gem 'simplecov-rcov'
  gem 'yarjuf'
  gem 'require_all'
+ gem 'capybara'
+ gem 'poltergeist'
 end
 
 gemspec

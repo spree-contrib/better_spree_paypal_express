@@ -19,8 +19,13 @@ require File.expand_path('../dummy/config/environment.rb',  __FILE__)
 require 'rspec/rails'
 require 'database_cleaner'
 require 'ffaker'
-require 'capybara/rspec'
 require 'pry'
+require 'capybara/rspec'
+require 'capybara/rails'
+require 'capybara/poltergeist'
+ 
+Capybara.javascript_driver = :poltergeist
+Capybara.default_wait_time = 8
 
 Dir[File.join(File.dirname(__FILE__), 'support/**/*.rb')].each { |f| require f }
 

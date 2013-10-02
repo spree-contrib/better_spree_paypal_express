@@ -198,6 +198,7 @@ describe "PayPal", :js => true do
         fill_in "login_password", :with => "thequickbrownfox"
         click_button "Log In"
         find("#continue_abovefold").click   # Because there's TWO continue buttons.
+        sleep 10
         page.should have_content("Your order has been processed successfully")
 
         visit '/admin'
