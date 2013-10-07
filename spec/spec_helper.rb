@@ -25,7 +25,7 @@ require 'capybara/rails'
 require 'capybara/poltergeist'
  
 Capybara.javascript_driver = :poltergeist
-Capybara.default_wait_time = 8
+Capybara.default_wait_time = 15
 
 Dir[File.join(File.dirname(__FILE__), 'support/**/*.rb')].each { |f| require f }
 
