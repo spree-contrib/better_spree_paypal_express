@@ -10,8 +10,16 @@ module SpreePaypalExpress
       end
 
       def add_stylesheets
-        inject_into_file 'app/assets/stylesheets/store/all.css', " *= require store/spree_paypal_express\n", :before => /\*\//, :verbose => true
-        inject_into_file 'app/assets/stylesheets/admin/all.css', " *= require admin/spree_paypal_express\n", :before => /\*\//, :verbose => true
+        application_css_sass = "app/assets/stylesheets/application.css.sass"
+        application_css_scss = "app/assets/stylesheets/application.css.scss"
+        application_css = "app/assets/stylesheets/application.css"
+
+        css_file = application_css_sass if File.exist?(application_css_sass)
+        css_file = application_css_scss if File.exist?(application_css_scss)
+        css_file ||= application_css
+
+        inject_into_file css_file, " *= require store/spree_paypal_express\n", :before => /\*\//, :verbose => true
+        inject_into_file css_file, " *= require admin/spree_paypal_express\n", :before => /\*\//, :verbose => true
       end
 
       def add_migrations
