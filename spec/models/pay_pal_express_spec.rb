@@ -6,7 +6,7 @@ describe Spree::Gateway::PayPalExpress do
   context "payment purchase" do
     let(:payment) do
       payment = FactoryGirl.create(:payment, :payment_method => gateway, :amount => 10)
-      payment.stub :source => mock_model(Spree::PaypalExpressCheckout, :token => 'fake_token', :payer_id => 'fake_payer_id', :update_column => true)
+      payment.stub :source => mock_model(Spree::PaypalExpressCheckout, :token => 'fake_token', :payer_id => 'fake_payer_id')
       payment
     end
 
@@ -32,10 +32,10 @@ describe Spree::Gateway::PayPalExpress do
           ]
         }
       })
-      response = double('pp_response', :success? => true)
-      response.stub_chain("do_express_checkout_payment_response_details.payment_info.first.transaction_id").and_return '12345'
+      response = double('pp_response', :success? => true) 
       provider.should_receive(:do_express_checkout_payment).and_return(response)
-      lambda { payment.purchase! }.should_not raise_error
+      payment.purchase!
+      # lambda { payment.purchase! }.should_not raise_error
     end
 
     # Test for #4
