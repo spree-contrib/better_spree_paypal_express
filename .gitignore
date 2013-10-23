@@ -3,10 +3,8 @@
 .#*
 .DS_Store
 coverage
-results.xml
 Gemfile.lock
 tmp
 pkg
 spec/dummy
 .rvmrc
-.idea
