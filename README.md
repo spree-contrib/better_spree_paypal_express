@@ -18,6 +18,10 @@ Behind-the-scenes, this extension uses [PayPal's Merchant Ruby SDK](https://gith
 
         bundle exec rails g spree_paypal_express:install
 
+4. Restart your server
+
+If your server was running, restart it so that it can find the assets properly.
+
 ### Sandbox Setup
 
 #### PayPal
