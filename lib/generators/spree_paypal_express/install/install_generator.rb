@@ -13,7 +13,7 @@ module SpreePaypalExpress
         frontend_css_file = "app/assets/stylesheets/store/all.css"
         backend_css_file = "app/assets/stylesheets/admin/all.css"
 
-        if File.exist?(css_file)
+        if File.exist?(backend_css_file) && File.exist?(frontend_css_file)
           inject_into_file frontend_css_file, " *= require store/spree_paypal_express\n", :before => /\*\//, :verbose => true
           inject_into_file backend_css_file, " *= require admin/spree_paypal_express\n", :before => /\*\//, :verbose => true
         end
