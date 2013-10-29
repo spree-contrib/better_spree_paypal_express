@@ -4,9 +4,9 @@ describe "PayPal", :js => true do
   let!(:product) { FactoryGirl.create(:product, :name => 'iPad') }
   before do
     @gateway = Spree::Gateway::PayPalExpress.create!({
-      :preferred_login => "paypal_api1.ryanbigg.com",
-      :preferred_password => "1373587879",
-      :preferred_signature => "ACOYQHq-aXKftiD4jURhihawsVSsAsaMr4qH4Tz4K17mJoa3K4M0Dvop",
+      :preferred_login => "pp_api1.ryanbigg.com",
+      :preferred_password => "1383066713",
+      :preferred_signature => "An5ns1Kso7MWUdW4ErQKJJJ4qi4-Ar-LpzhMJL0cu8TjM8Z2e1ykVg5B",
       :name => "PayPal",
       :active => true,
       :environment => Rails.env
