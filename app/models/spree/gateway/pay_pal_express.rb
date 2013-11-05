@@ -5,6 +5,10 @@ module Spree
     preference :password, :string
     preference :signature, :string
     preference :server, :string, default: 'sandbox'
+    preference :solution, :string, default: 'Mark'
+    preference :logourl, :string, default: ''
+
+    attr_accessible :preferred_solution, :preferred_logourl
 
     attr_accessible :preferred_login, :preferred_password, :preferred_signature
 
