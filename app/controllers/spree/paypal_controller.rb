@@ -40,6 +40,8 @@ module Spree
         :SetExpressCheckoutRequestDetails => {
           :ReturnURL => confirm_paypal_url(:payment_method_id => params[:payment_method_id]),
           :CancelURL =>  cancel_paypal_url,
+          :SolutionType => payment_method.preferred_solution.present? ? payment_method.preferred_solution : "Mark",
+          :HdrImg => payment_method.preferred_logourl.present? ? payment_method.preferred_logourl : "",
           :PaymentDetails => [payment_details(items)]
         }})
 
