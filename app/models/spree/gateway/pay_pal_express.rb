@@ -6,7 +6,7 @@ module Spree
     preference :signature, :string
     preference :server, :string, default: 'sandbox'
     preference :solution, :string, default: 'Mark'
-    preference :logourl, :string, default: 'Mark'
+    preference :logourl, :string, default: ''
 
     attr_accessible :preferred_solution, :preferred_logourl
 
