@@ -8,8 +8,6 @@ module Spree
     preference :solution, :string, default: 'Mark'
     preference :logourl, :string, default: ''
 
-    attr_accessible :preferred_solution, :preferred_logourl
-
     def supports?(source)
       true
     end
