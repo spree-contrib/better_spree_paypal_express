@@ -38,6 +38,11 @@ module Spree
     end
 
     def purchase(amount, express_checkout, gateway_options={})
+      pp_details_request = provider.build_get_express_checkout_details({
+        :Token => express_checkout.token
+      })
+      pp_details_response = provider.get_express_checkout_details(pp_details_request)
+
       pp_request = provider.build_do_express_checkout_payment({
         :DoExpressCheckoutPaymentRequestDetails => {
           :PaymentAction => "Sale",
@@ -46,14 +51,16 @@ module Spree
           :PaymentDetails => [{
             :OrderTotal => {
               :currencyID => Spree::Config[:currency],
-              # gsub is here because PayPal fails to acknowledge 
+              # gsub is here because PayPal fails to acknowledge
               # that some people like their currencies written as:
               # 21,99
               # As opposed to:
               # 21.99
               # The international payments company fails to handle
               # international payment amounts. SMH.
-              :value => ::Money.new(amount, Spree::Config[:currency]).to_s.gsub(',', '.') }
+              :value => ::Money.new(amount, Spree::Config[:currency]).to_s.gsub(',', '.')
+            },
+            :PaymentDetailsItem => pp_details_response.get_express_checkout_details_response_details.PaymentDetails[0].PaymentDetailsItem
           }]
         }
       })
