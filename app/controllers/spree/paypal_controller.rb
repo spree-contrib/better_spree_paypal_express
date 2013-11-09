@@ -4,7 +4,7 @@ module Spree
       items = current_order.line_items.map do |item|
         {
           :Name => item.product.name,
-          :Number => item.product.sku,
+          :Number => item.variant.sku,
           :Quantity => item.quantity,
           :Amount => {
             :currencyID => current_order.currency,
