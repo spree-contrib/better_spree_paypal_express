@@ -36,13 +36,13 @@ module Spree
       items.reject! do |item|
         item[:Amount][:value].zero?
       end
-
       pp_request = provider.build_set_express_checkout({
         :SetExpressCheckoutRequestDetails => {
           :ReturnURL => confirm_paypal_url(:payment_method_id => params[:payment_method_id], :utm_nooverride => 1),
           :CancelURL =>  cancel_paypal_url,
           :SolutionType => payment_method.preferred_solution.present? ? payment_method.preferred_solution : "Mark",
-          :HdrImg => payment_method.preferred_logourl.present? ? payment_method.preferred_logourl : "",
+          :LandingPage => payment_method.preferred_landing_page.present? ? payment_method.preferred_landing_page : "Billing",
+          :cppheaderimage => payment_method.preferred_logourl.present? ? payment_method.preferred_logourl : "",
           :PaymentDetails => [payment_details(items)]
         }})
 

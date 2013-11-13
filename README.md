@@ -42,6 +42,46 @@ If you are unable to find it, then follow [PayPal's own documentation](https://d
 
 Same as sandbox setup, but change "Server" from "sandbox" to "live".
 
+## Configuration
+
+The PayPal Express Checkout has [no less than 4.5 billion configuration options](https://github.com/paypal/merchant-sdk-ruby/blob/1d65e598d2f9f200f85c6b3338d4293dbed576d8/lib/paypal-sdk/merchant/data_types.rb#L830-L959).
+
+This Spree extension supports *some* of those. If your favourite is not here, then please submit an issue about it, or better still a patch to add it in.
+
+### Solution Type
+
+Determines whether or not a user needs a PayPal account to check out. 
+
+```ruby
+payment_method.preferred_solution_type = "Mark"
+# or
+payment_method.preferred_solution_type = "Sole"
+```
+
+"Mark" if you do want users to have a paypal account, "Sole" otherwise. 
+
+### Landing Page
+
+Determines which page to show users once they're redirected to PayPal.
+
+```ruby
+payment_method.preferred_solution_type = "Login"
+# or
+payment_method.preferred_solution_type = "Billing"
+```
+
+"Login" will show the users the login form for PayPal, and "Billing" will show them a form where they can enter their credit card data and possibly sign up for a PayPal account (depending on the Solution Type setting above).
+
+### Logo
+
+Determines what logo, if any, to display at the top left of the PayPal express checkout:
+
+```ruby
+payment_method.preferred_logourl = 'http://yoursite.com/images/checkout.jpg'
+```
+
+**Must** be an absolute path to the image.
+
 ## Caveats
 
 *Caveat venditor*
