@@ -6,6 +6,7 @@ module Spree
     preference :signature, :string
     preference :server, :string, default: 'sandbox'
     preference :solution, :string, default: 'Mark'
+    preference :landing_page, :string, default: 'Billing'
     preference :logourl, :string, default: ''
 
     def supports?(source)
