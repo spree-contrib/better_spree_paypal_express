@@ -9,9 +9,8 @@ module Spree
     preference :landing_page, :string, default: 'Billing'
     preference :logourl, :string, default: ''
 
-    attr_accessible :preferred_solution, :preferred_logourl
-
-    attr_accessible :preferred_login, :preferred_password, :preferred_signature
+    attr_accessible :preferred_login, :preferred_password, :preferred_signature,
+                    :preferred_solution, :preferred_logourl, :preferred_landing_page
 
     def supports?(source)
       true
