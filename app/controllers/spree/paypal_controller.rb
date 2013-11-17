@@ -49,7 +49,7 @@ module Spree
       begin
         pp_response = provider.set_express_checkout(pp_request)
         if pp_response.success?
-          redirect_to provider.express_checkout_url(pp_response)
+          redirect_to provider.express_checkout_url(pp_response, express_checkout_options)
         else
           flash[:error] = "PayPal failed. #{pp_response.errors.map(&:long_message).join(" ")}"
           redirect_to checkout_state_path(:payment)
@@ -143,6 +143,12 @@ module Spree
         :Country => current_order.bill_address.country.iso,
         :PostalCode => current_order.bill_address.zipcode
       }
+    end
+
+    def express_checkout_options
+      {}.tap do |opts|
+        opts[:useraction] = 'commit' if current_order.confirmation_required?
+      end
     end
   end
 end

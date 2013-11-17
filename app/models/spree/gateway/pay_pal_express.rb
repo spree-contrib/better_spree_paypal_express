@@ -8,9 +8,10 @@ module Spree
     preference :solution, :string, default: 'Mark'
     preference :landing_page, :string, default: 'Billing'
     preference :logourl, :string, default: ''
+    preference :review, :boolean, default: false
 
     attr_accessible :preferred_login, :preferred_password, :preferred_signature,
-                    :preferred_solution, :preferred_logourl, :preferred_landing_page
+                    :preferred_solution, :preferred_logourl, :preferred_landing_page, :preferred_review
 
     def supports?(source)
       true
@@ -71,6 +72,10 @@ module Spree
         end
         pp_response
       end
+    end
+
+    def payment_profiles_supported?
+      preferred_review
     end
 
     def refund(payment, amount)
