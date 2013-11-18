@@ -15,6 +15,8 @@ module Spree
       end
 
       tax_adjustments = current_order.adjustments.tax
+      # TODO: Remove in Spree 2.2
+      tax_adjustments = tax_adjustments.additional if tax_adjustments.respond_to?(:additional)
       shipping_adjustments = current_order.adjustments.shipping
 
       current_order.adjustments.eligible.each do |adjustment|
@@ -97,6 +99,14 @@ module Spree
 
     def payment_details items
       item_sum = items.sum { |i| i[:Quantity] * i[:Amount][:value] }
+      # Would use tax_total here, but it can include "included" taxes as well.
+      # For instance, tax_total would include the 10% GST in Australian stores.
+      # A quick sum will get us around that little problem.
+      # TODO: Remove additional check in 2.2
+      tax_adjustments = current_order.adjustments.tax
+      tax_adjustments = tax_adjustments.additional if tax_adjustments.respond_to?(:additional)
+      tax_adjustments_total = tax_adjustments.sum(:amount)
+
       if item_sum.zero?
         # Paypal does not support no items or a zero dollar ItemTotal
         # This results in the order summary being simply "Current purchase"
@@ -122,7 +132,7 @@ module Spree
           },
           :TaxTotal => {
             :currencyID => current_order.currency,
-            :value => current_order.tax_total
+            :value => tax_adjustments_total,
           },
           :ShipToAddress => address_options,
           :PaymentDetailsItem => items,
