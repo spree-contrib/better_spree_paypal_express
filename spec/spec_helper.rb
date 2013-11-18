@@ -22,14 +22,16 @@ require 'ffaker'
 require 'pry'
 require 'capybara/rspec'
 require 'capybara/rails'
-require 'capybara/poltergeist'
- 
-Capybara.javascript_driver = :poltergeist
+# require 'capybara/poltergeist'
+require 'debugger'
+
+# Capybara.javascript_driver = :poltergeist
 Capybara.default_wait_time = 15
 
 Dir[File.join(File.dirname(__FILE__), 'support/**/*.rb')].each { |f| require f }
 
 require 'spree/testing_support/factories'
+require 'spree/testing_support/capybara_ext'
 require 'spree/testing_support/controller_requests'
 require 'spree/testing_support/authorization_helpers'
 require 'spree/testing_support/url_helpers'
