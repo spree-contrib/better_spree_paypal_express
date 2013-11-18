@@ -48,14 +48,14 @@ The PayPal Express Checkout has [no less than 4.5 billion configuration options]
 
 This Spree extension supports *some* of those. If your favourite is not here, then please submit an issue about it, or better still a patch to add it in.
 
-### Solution Type
+### Solution
 
 Determines whether or not a user needs a PayPal account to check out. 
 
 ```ruby
-payment_method.preferred_solution_type = "Mark"
+payment_method.preferred_solution = "Mark"
 # or
-payment_method.preferred_solution_type = "Sole"
+payment_method.preferred_solution = "Sole"
 ```
 
 "Mark" if you do want users to have a paypal account, "Sole" otherwise. 
@@ -65,9 +65,9 @@ payment_method.preferred_solution_type = "Sole"
 Determines which page to show users once they're redirected to PayPal.
 
 ```ruby
-payment_method.preferred_solution_type = "Login"
+payment_method.preferred_landing_page = "Login"
 # or
-payment_method.preferred_solution_type = "Billing"
+payment_method.preferred_landing_page = "Billing"
 ```
 
 "Login" will show the users the login form for PayPal, and "Billing" will show them a form where they can enter their credit card data and possibly sign up for a PayPal account (depending on the Solution Type setting above).
