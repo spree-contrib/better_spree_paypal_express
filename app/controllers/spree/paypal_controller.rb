@@ -14,7 +14,7 @@ module Spree
         }
       end
 
-      tax_adjustments = current_order.adjustments.tax
+      tax_adjustments = current_order.adjustments.tax.additional
       shipping_adjustments = current_order.adjustments.shipping
 
       current_order.adjustments.eligible.each do |adjustment|
