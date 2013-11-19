@@ -23,7 +23,7 @@ module Spree
       ::PayPal::SDK.configure(
         :mode        => preferred_server.present? ? preferred_server : "sandbox",
         :subject     => preferred_seller_account_email.present? ? preferred_seller_account_email : nil,
-        :perm_refund => preferred_permission_refund.present? ? preferred_permission_refund : nil,
+        :token       => preferred_permission_refund.present? ? preferred_permission_refund : nil,
         :username    => preferred_login,
         :password    => preferred_password,
         :signature   => preferred_signature)
