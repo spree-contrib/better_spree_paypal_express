@@ -3,10 +3,12 @@ require 'spec_helper'
 describe "PayPal", :js => true do
   let!(:product) { FactoryGirl.create(:product, :name => 'iPad') }
   before do
+    Spree::Config[:always_include_confirm_step] = false
     @gateway = Spree::Gateway::PayPalExpress.create!({
       :preferred_login => "pp_api1.ryanbigg.com",
       :preferred_password => "1383066713",
       :preferred_signature => "An5ns1Kso7MWUdW4ErQKJJJ4qi4-Ar-LpzhMJL0cu8TjM8Z2e1ykVg5B",
+      :preferred_review => false,
       :name => "PayPal",
       :active => true,
       :environment => Rails.env
@@ -239,6 +241,67 @@ describe "PayPal", :js => true do
         click_button "Refund"
         page.should have_content("PayPal refund unsuccessful (The partial refund amount is not valid)")
       end
+
+    end
+
+    context 'credit payment with review' do
+      before do
+        @gateway.update_attributes preferred_review: true
+        visit spree.root_path
+        click_link 'iPad'
+        click_button 'Add To Cart'
+        click_button 'Checkout'
+        within("#guest_checkout") do
+          fill_in "Email", :with => "test@example.com"
+          click_button 'Continue'
+        end
+        fill_in_billing
+        click_button "Save and Continue"
+        # Delivery step doesn't require any action
+        click_button "Save and Continue"
+        find("#paypal_button").click
+        switch_to_paypal_login
+        fill_in "login_email", :with => "pp@spreecommerce.com"
+        fill_in "login_password", :with => "thequickbrownfox"
+        click_button "Log In"
+        find("#continue_abovefold").click   # Because there's TWO continue buttons.
+        click_button 'Place Order'
+        page.should have_content("Your order has been processed successfully")
+
+        visit spree.admin_order_adjustments_path(Spree::Order.last.number)
+      end
+
+      it 'can automatically credit payment when payment_profiles is supported' do
+        # create 1st adjustment
+        click_link "New Adjustment"
+        fill_in "adjustment_amount", :with => "-10"
+        fill_in "adjustment_label", :with => "rebate"
+        click_button "Continue"
+        page.should have_content("successfully created!")
+
+        # can credit first time
+        visit spree.admin_order_payments_path(Spree::Order.last.number)
+        page.should have_content('CREDIT OWED: -$10.00')
+        click_icon :credit
+        page.should have_content 'Payment Updated'
+
+
+        visit spree.admin_order_adjustments_path(Spree::Order.last.number)
+        # create 2nd adjustment
+        click_link "New Adjustment"
+        fill_in "adjustment_amount", :with => "-5"
+        fill_in "adjustment_label", :with => "rebate"
+        click_button "Continue"
+        page.should have_content("successfully created!")
+
+        # can credit 2nd time
+        visit spree.admin_order_payments_path(Spree::Order.last.number)
+        page.should have_content('CREDIT OWED: -$5.00')
+        click_icon :credit
+        page.should have_content 'Payment Updated'
+
+      end
+
     end
   end
 end

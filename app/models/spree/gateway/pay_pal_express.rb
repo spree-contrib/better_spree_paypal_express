@@ -8,9 +8,10 @@ module Spree
     preference :solution, :string, default: 'Mark'
     preference :landing_page, :string, default: 'Billing'
     preference :logourl, :string, default: ''
+    preference :review, :boolean, default: false
 
     attr_accessible :preferred_login, :preferred_password, :preferred_signature,
-                    :preferred_solution, :preferred_logourl, :preferred_landing_page
+                    :preferred_solution, :preferred_logourl, :preferred_landing_page, :preferred_review
 
     def supports?(source)
       true
@@ -58,11 +59,7 @@ module Spree
         # This is mainly so we can use it later on to refund the payment if the user wishes.
         transaction_id = pp_response.do_express_checkout_payment_response_details.payment_info.first.transaction_id
         express_checkout.update_column(:transaction_id, transaction_id)
-        # This is rather hackish, required for payment/processing handle_response code.
-        Class.new do
-          def success?; true; end
-          def authorization; nil; end
-        end.new
+        successfull_refund
       else
         class << pp_response
           def to_s
@@ -71,6 +68,13 @@ module Spree
         end
         pp_response
       end
+    end
+
+    def payment_profiles_supported?
+      !!preferred_review
+    end
+
+    def create_profile(payment)
     end
 
     def refund(payment, amount)
@@ -92,6 +96,40 @@ module Spree
         }, :without_protection => true)
       end
       refund_transaction_response
+    end
+
+    def credit(amount, source, response_code={}, options={})
+      amount /= 100 #was in cts
+
+      total = (options[:shipping] + options[:tax] + options[:subtotal] + options[:discount]) / 100
+      refund_type = total == amount ? 'Full' : 'Partial'
+      refund_transaction = provider.build_refund_transaction({
+        :TransactionID => source.transaction_id,
+        :RefundType => refund_type,
+        :Amount => {
+          :currencyID => options[:currency],
+          :value => amount },
+        :RefundSource => "any" })
+      refund_transaction_response = provider.refund_transaction(refund_transaction)
+      if refund_transaction_response.success?
+        source.update_attributes({
+          :refunded_at => Time.now,
+          :refund_transaction_id => refund_transaction_response.RefundTransactionID,
+          :state => "refunded",
+          :refund_type => refund_type
+        }, :without_protection => true)
+      end
+      successfull_refund
+    end
+
+    protected
+
+    # This is rather hackish, required for payment/processing handle_response code.
+    def successfull_refund
+      Class.new do
+        def success?; true; end
+        def authorization; nil; end
+      end.new
     end
   end
 end
