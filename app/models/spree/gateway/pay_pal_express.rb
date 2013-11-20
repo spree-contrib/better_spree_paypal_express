@@ -71,7 +71,10 @@ module Spree
     end
 
     def payment_profiles_supported?
-      preferred_review
+      !!preferred_review
+    end
+
+    def create_profile(payment)
     end
 
     def refund(payment, amount)

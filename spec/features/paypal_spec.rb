@@ -3,10 +3,12 @@ require 'spec_helper'
 describe "PayPal", :js => true do
   let!(:product) { FactoryGirl.create(:product, :name => 'iPad') }
   before do
+    Spree::Config[:always_include_confirm_step] = false
     @gateway = Spree::Gateway::PayPalExpress.create!({
       :preferred_login => "pp_api1.ryanbigg.com",
       :preferred_password => "1383066713",
       :preferred_signature => "An5ns1Kso7MWUdW4ErQKJJJ4qi4-Ar-LpzhMJL0cu8TjM8Z2e1ykVg5B",
+      :preferred_review => false,
       :name => "PayPal",
       :active => true,
       :environment => Rails.env

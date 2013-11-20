@@ -10,8 +10,17 @@ describe Spree::Gateway::PayPalExpress do
       payment
     end
 
+    let(:checkout_details) do
+      double('checkout details').tap do |a|
+        a.stub_chain(:get_express_checkout_details_response_details, :PaymentDetails).
+        and_return [{ :OrderTotal => { :currencyID => "USD", :value => "10.00" } }]
+      end
+    end
+
     let(:provider) do
       provider = double('Provider')
+      provider.stub(:build_get_express_checkout_details)
+      provider.stub(:get_express_checkout_details).and_return checkout_details
       gateway.stub(:provider => provider)
       provider
     end
@@ -41,7 +50,7 @@ describe Spree::Gateway::PayPalExpress do
     # Test for #4
     it "fails" do
       provider.should_receive(:build_do_express_checkout_payment)
-      response = double('pp_response', :success? => false, 
+      response = double('pp_response', :success? => false,
                           :errors => [double('pp_response_error', :long_message => "An error goes here.")])
       provider.should_receive(:do_express_checkout_payment).and_return(response)
       lambda { payment.purchase! }.should raise_error(Spree::Core::GatewayError, "An error goes here.")
