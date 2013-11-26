@@ -122,7 +122,7 @@ module Spree
           },
           :TaxTotal => {
             :currencyID => current_order.currency,
-            :value => current_order.tax_total
+            :value => current_order.additional_tax_total
           },
           :ShipToAddress => address_options,
           :PaymentDetailsItem => items,
