@@ -1,4 +1,4 @@
-Spree::Core::Engine.routes.append do
+routes = lambda do
   get '/paypal', :to => "paypal#express", :as => :paypal_express
   get '/paypal/confirm', :to => "paypal#confirm", :as => :confirm_paypal
   get '/paypal/cancel', :to => "paypal#cancel", :as => :cancel_paypal
@@ -15,4 +15,10 @@ Spree::Core::Engine.routes.append do
       end
     end
   end
+end
+
+if Spree::Core::Engine.respond_to?(:add_routes)
+  Spree::Core::Engine.add_routes(&routes)
+else
+  Spree::Core::Engine.routes.draw(&routes)
 end
