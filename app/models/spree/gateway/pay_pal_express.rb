@@ -59,7 +59,7 @@ module Spree
         # This is mainly so we can use it later on to refund the payment if the user wishes.
         transaction_id = pp_response.do_express_checkout_payment_response_details.payment_info.first.transaction_id
         express_checkout.update_column(:transaction_id, transaction_id)
-        successfull_refund
+        successful_refund
       else
         class << pp_response
           def to_s
@@ -99,7 +99,7 @@ module Spree
     end
 
     def credit(amount, source, response_code={}, options={})
-      amount /= 100 #was in cts
+      amount /= 100 #was in cents
 
       total = (options[:shipping] + options[:tax] + options[:subtotal] + options[:discount]) / 100
       refund_type = total == amount ? 'Full' : 'Partial'
@@ -118,16 +118,25 @@ module Spree
           :state => "refunded",
           :refund_type => refund_type
         }, :without_protection => true)
+        successful_refund
+      else
+        failed_refund
       end
-      successfull_refund
     end
 
     protected
 
     # This is rather hackish, required for payment/processing handle_response code.
-    def successfull_refund
+    def successful_refund
       Class.new do
         def success?; true; end
+        def authorization; nil; end
+      end.new
+    end
+
+    def failed_refund
+      Class.new do
+        def success?; false; end
         def authorization; nil; end
       end.new
     end
