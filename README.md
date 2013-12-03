@@ -28,7 +28,7 @@ You will also need a "Personal" account to test the transactions on your site. C
 
 #### Spree Setup
 
-In Spree, go to the admin backend, click "Configuration" and then "Payment Methods" and create a new payment method. Select "Spree::Gateway::PayPalExpress" as the provider, and click "Create". Enter the email address, password and signature from the "API Credentials" tab for the **Business** account on PayPal. 
+In Spree, go to the admin backend, click "Configuration" and then "Payment Methods" and create a new payment method. Select "Spree::Gateway::PayPalExpress" as the provider, and click "Create". Enter the email address, password and signature from the "API Credentials" tab for the **Business** account on PayPal.
 
 ### Production setup
 
@@ -48,9 +48,20 @@ The PayPal Express Checkout has [no less than 4.5 billion configuration options]
 
 This Spree extension supports *some* of those. If your favourite is not here, then please submit an issue about it, or better still a patch to add it in.
 
+
+### Checkout confirmation step
+
+Determines whether or not checkout should have a final confirmation step.
+
+```ruby
+payment_method.preferred_review = true #after paypal payment, user will be redirected on spree, it will show a final confirmation step.
+# or
+payment_method.preferred_review = false
+```
+
 ### Solution
 
-Determines whether or not a user needs a PayPal account to check out. 
+Determines whether or not a user needs a PayPal account to check out.
 
 ```ruby
 payment_method.preferred_solution = "Mark"
@@ -58,7 +69,7 @@ payment_method.preferred_solution = "Mark"
 payment_method.preferred_solution = "Sole"
 ```
 
-"Mark" if you do want users to have a paypal account, "Sole" otherwise. 
+"Mark" if you do want users to have a paypal account, "Sole" otherwise.
 
 ### Landing Page
 
