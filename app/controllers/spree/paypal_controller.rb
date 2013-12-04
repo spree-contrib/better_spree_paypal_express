@@ -147,7 +147,7 @@ module Spree
 
     def express_checkout_options
       {}.tap do |opts|
-        opts[:useraction] = 'commit' if current_order.confirmation_required?
+        opts[:useraction] = 'commit' if !current_order.confirmation_required?
       end
     end
   end
