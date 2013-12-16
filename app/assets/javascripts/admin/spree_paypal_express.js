@@ -1,4 +1,5 @@
-//= require admin/spree_backend
+//= require store/spree_core
+//= require store/spree_promo
 
 SpreePaypalExpress = {
   hideSettings: function(paymentMethod) {

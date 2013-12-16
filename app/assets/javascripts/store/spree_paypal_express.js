@@ -1,4 +1,8 @@
-//= require store/spree_frontend
+//= require store/spree_core
+//= require store/spree_promo
+
+// Stops 'uncaught reference error' issue
+Spree = {}
 
 SpreePaypalExpress = {
   hidePaymentSaveAndContinueButton: function(paymentMethod) {

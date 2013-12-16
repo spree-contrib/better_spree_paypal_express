@@ -22,24 +22,24 @@ require 'ffaker'
 require 'pry'
 require 'capybara/rspec'
 require 'capybara/rails'
-require 'capybara/poltergeist'
+# require 'capybara/poltergeist'
  
-Capybara.javascript_driver = :poltergeist
+# Capybara.javascript_driver = :poltergeist
 Capybara.default_wait_time = 15
 
 Dir[File.join(File.dirname(__FILE__), 'support/**/*.rb')].each { |f| require f }
 
-require 'spree/testing_support/factories'
-require 'spree/testing_support/controller_requests'
-require 'spree/testing_support/authorization_helpers'
-require 'spree/testing_support/url_helpers'
+require 'spree/core/testing_support/factories'
+require 'spree/core/testing_support/controller_requests'
+require 'spree/core/testing_support/authorization_helpers'
+require 'spree/core/url_helpers'
 
 require 'spree_paypal_express/factories'
 
 RSpec.configure do |config|
   config.include FactoryGirl::Syntax::Methods
-  config.include Spree::TestingSupport::UrlHelpers
-  config.include Spree::TestingSupport::AuthorizationHelpers::Controller
+  config.include Spree::Core::UrlHelpers
+  config.extend AuthorizationHelpers::Request, :type => :feature
 
   config.mock_with :rspec
   config.color = true

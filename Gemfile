@@ -1,7 +1,7 @@
 source 'https://rubygems.org'
 
-gem 'spree', :github => 'spree/spree', :branch => '2-0-stable'
-gem 'spree_auth_devise', github: 'spree/spree_auth_devise', :branch => '2-0-stable'
+gem 'spree', :github => 'spree/spree', :branch => '1-3-stable'
+gem 'spree_auth_devise', github: 'spree/spree_auth_devise', :branch => '1-3-stable'
 gem 'sqlite3'
 gem 'pg'
 gem 'database_cleaner', '1.0.1'

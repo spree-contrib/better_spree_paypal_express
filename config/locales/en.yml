@@ -1,16 +1,15 @@
 ---
 en:
-  spree:
-    paypal:
-      already_refunded: "This payment has been refunded and no further action can be taken on it."
-      transaction: "PayPal Transaction"
-      payer_id: "Payer ID"
-      transaction_id: "Transaction ID"
-      token: "Token"
+  paypal:
+    already_refunded: "This payment has been refunded and no further action can be taken on it."
+    transaction: "PayPal Transaction"
+    payer_id: "Payer ID"
+    transaction_id: "Transaction ID"
+    token: "Token"
+    refund: "Refund"
+    refund_amount: "Amount"
+    original_amount: "Original amount: %{amount}"
+    refund_successful: "PayPal refund successful"
+    refund_unsuccessful: "PayPal refund unsuccessful"
+    actions:
       refund: "Refund"
-      refund_amount: "Amount"
-      original_amount: "Original amount: %{amount}"
-      refund_successful: "PayPal refund successful"
-      refund_unsuccessful: "PayPal refund unsuccessful"
-      actions:
-        refund: "Refund"

@@ -2,6 +2,7 @@ require 'spec_helper'
 
 describe "PayPal", :js => true do
   let!(:product) { FactoryGirl.create(:product, :name => 'iPad') }
+
   before do
     @gateway = Spree::Gateway::PayPalExpress.create!({
       :preferred_login => "pp_api1.ryanbigg.com",
@@ -11,8 +12,12 @@ describe "PayPal", :js => true do
       :active => true,
       :environment => Rails.env
     })
-    FactoryGirl.create(:shipping_method)
+    shipping_method = FactoryGirl.create(:shipping_method)
+    state = FactoryGirl.create(:state)
+    state.country.update_column(:name, 'United States of America')
+    shipping_method.zone.zone_members.create(:zoneable => state.country)
   end
+
   def fill_in_billing
     within("#billing") do
       fill_in "First Name", :with => "Test"

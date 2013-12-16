@@ -4,12 +4,12 @@ require 'rake/testtask'
 require 'rake/packagetask'
 require 'rubygems/package_task'
 require 'rspec/core/rake_task'
-require 'spree/testing_support/extension_rake'
+require 'spree/core/testing_support/common_rake'
 
 desc 'Generates a dummy app for testing'
 task :test_app do
   ENV['LIB_NAME'] = 'spree_paypal_express'
-  Rake::Task['extension:test_app'].invoke
+  Rake::Task['common:test_app'].invoke
 end
 
 require 'rspec/core'
