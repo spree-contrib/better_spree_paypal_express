@@ -1,31 +1,32 @@
 module Spree
   class PaypalController < StoreController
     def express
-      items = current_order.line_items.map do |item|
+      order = current_order || raise(ActiveRecord::RecordNotFound)
+      items = order.line_items.map do |item|
         {
           :Name => item.product.name,
           :Number => item.variant.sku,
           :Quantity => item.quantity,
           :Amount => {
-            :currencyID => current_order.currency,
+            :currencyID => order.currency,
             :value => item.price
           },
           :ItemCategory => "Physical"
         }
       end
 
-      tax_adjustments = current_order.adjustments.tax
+      tax_adjustments = order.adjustments.tax
       # TODO: Remove in Spree 2.2
       tax_adjustments = tax_adjustments.additional if tax_adjustments.respond_to?(:additional)
-      shipping_adjustments = current_order.adjustments.shipping
+      shipping_adjustments = order.adjustments.shipping
 
-      current_order.adjustments.eligible.each do |adjustment|
+      order.adjustments.eligible.each do |adjustment|
         next if (tax_adjustments + shipping_adjustments).include?(adjustment)
         items << {
           :Name => adjustment.label,
           :Quantity => 1,
           :Amount => {
-            :currencyID => current_order.currency,
+            :currencyID => order.currency,
             :value => adjustment.amount
           }
         }
@@ -63,7 +64,7 @@ module Spree
     end
 
     def confirm
-      order = current_order
+      order = current_order || raise(ActiveRecord::RecordNotFound)
       order.payments.create!({
         :source => Spree::PaypalExpressCheckout.create({
           :token => params[:token],
