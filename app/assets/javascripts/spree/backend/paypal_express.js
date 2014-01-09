@@ -4,13 +4,13 @@ SpreePaypalExpress = {
   hideSettings: function(paymentMethod) {
     if (SpreePaypalExpress.paymentMethodID && paymentMethod.val() == SpreePaypalExpress.paymentMethodID) {
       $('.payment-method-settings').children().hide();
-      $('#payment_amount').attr('disabled', 'disabled');
-      $('button[type="submit"]').attr('disabled', 'disabled');
+      $('#payment_amount').prop('disabled', 'disabled');
+      $('button[type="submit"]').prop('disabled', 'disabled');
       $('#paypal-warning').show();
     } else if (SpreePaypalExpress.paymentMethodID) {
       $('.payment-method-settings').children().show();
-      $('button[type=submit]').attr('disabled', '');
-      $('#payment_amount').attr('disabled', '')
+      $('button[type=submit]').prop('disabled', '');
+      $('#payment_amount').prop('disabled', '')
       $('#paypal-warning').hide();
     }
   }
