@@ -22,5 +22,12 @@ describe Spree::PaypalController do
           to raise_error(ActiveRecord::RecordNotFound)
       end
     end
+
+    context "cancel" do
+      it "raises ActiveRecord::RecordNotFound" do
+        expect(lambda { get :cancel, :use_route => :spree }).
+          to raise_error(ActiveRecord::RecordNotFound)
+      end
+    end
   end
 end
