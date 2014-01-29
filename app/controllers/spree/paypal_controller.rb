@@ -85,7 +85,7 @@ module Spree
     def cancel
       flash[:notice] = t('flash.cancel', :scope => 'paypal')
       order = current_order || raise(ActiveRecord::RecordNotFound)
-      redirect_to checkout_state_path(order.state)
+      redirect_to checkout_state_path(order.state, paypal_cancel_token: params[:token])
     end
 
     private
