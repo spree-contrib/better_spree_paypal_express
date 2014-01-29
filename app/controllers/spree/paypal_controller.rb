@@ -75,7 +75,7 @@ module Spree
       if order.complete?
         flash.notice = Spree.t(:order_processed_successfully)
         flash[:commerce_tracking] = "nothing special"
-        redirect_to order_path(order, :token => order.token)
+        redirect_to completion_route(order)
       else
         redirect_to checkout_state_path(order.state)
       end
@@ -145,6 +145,10 @@ module Spree
         :Country => current_order.bill_address.country.iso,
         :PostalCode => current_order.bill_address.zipcode
       }
+    end
+    
+    def completion_route(order)
+      order_path(order, :token => order.token)
     end
   end
 end
