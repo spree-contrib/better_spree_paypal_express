@@ -17,9 +17,9 @@ SpreePaypalExpress = {
 }
 
 $(document).ready(function() {
-  checkedPaymentMethod = $('#payment-methods input[type="radio"]:checked');
+  checkedPaymentMethod = $('[data-hook="payment_method_field"] input[type="radio"]:checked');
   SpreePaypalExpress.hideSettings(checkedPaymentMethod);
-  paymentMethods = $('#payment-methods input[type="radio"]').click(function (e) {
+  paymentMethods = $('[data-hook="payment_method_field"] input[type="radio"]').click(function (e) {
     SpreePaypalExpress.hideSettings($(e.target));
   });
 })
