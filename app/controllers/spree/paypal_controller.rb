@@ -141,20 +141,26 @@ module Spree
     end
 
     def address_options
+      return {} unless address_required?
+
       {
-        :Name => current_order.bill_address.try(:full_name),
-        :Street1 => current_order.bill_address.address1,
-        :Street2 => current_order.bill_address.address2,
-        :CityName => current_order.bill_address.city,
-        # :phone => current_order.bill_address.phone,
-        :StateOrProvince => current_order.bill_address.state_text,
-        :Country => current_order.bill_address.country.iso,
-        :PostalCode => current_order.bill_address.zipcode
+          :Name => current_order.bill_address.try(:full_name),
+          :Street1 => current_order.bill_address.address1,
+          :Street2 => current_order.bill_address.address2,
+          :CityName => current_order.bill_address.city,
+          # :phone => current_order.bill_address.phone,
+          :StateOrProvince => current_order.bill_address.state_text,
+          :Country => current_order.bill_address.country.iso,
+          :PostalCode => current_order.bill_address.zipcode
       }
     end
 
     def completion_route(order)
       order_path(order, :token => order.token)
+    end
+
+    def address_required?
+      payment_method.preferred_solution.eql?('Sole')
     end
   end
 end
