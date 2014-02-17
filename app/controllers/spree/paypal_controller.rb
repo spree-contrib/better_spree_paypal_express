@@ -53,11 +53,11 @@ module Spree
         if pp_response.success?
           redirect_to provider.express_checkout_url(pp_response, :useraction => 'commit')
         else
-          flash[:error] = "PayPal failed. #{pp_response.errors.map(&:long_message).join(" ")}"
+          flash[:error] = t('flash.generic_error', :scope => 'paypal', :reasons => pp_response.errors.map(&:long_message).join(" "))
           redirect_to checkout_state_path(:payment)
         end
       rescue SocketError
-        flash[:error] = "Could not connect to PayPal."
+        flash[:error] = t('flash.connection_failed', :scope => 'paypal')
         redirect_to checkout_state_path(:payment)
       end
     end
@@ -83,7 +83,7 @@ module Spree
     end
 
     def cancel
-      flash[:notice] = "Don't want to use PayPal? No problems."
+      flash[:notice] = t('flash.cancel', :scope => 'paypal')
       order = current_order || raise(ActiveRecord::RecordNotFound)
       redirect_to checkout_state_path(order.state)
     end
