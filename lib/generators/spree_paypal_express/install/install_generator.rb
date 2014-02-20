@@ -5,8 +5,8 @@ module SpreePaypalExpress
       class_option :auto_run_migrations, :type => :boolean, :default => false
 
       def add_javascripts
-        append_file 'vendor/assets/javascripts/spree/frontend/all.js', "//= require spree/frontend/paypal_express\n"
-        append_file 'vendor/assets/javascripts/spree/backend/all.js', "//= require spree/backend/paypal_express\n"
+        append_file 'vendor/assets/javascripts/spree/frontend/all.js', "//= require spree/frontend/spree_paypal_express\n"
+        append_file 'vendor/assets/javascripts/spree/backend/all.js', "//= require spree/backend/spree_paypal_express\n"
       end
 
       def add_stylesheets
