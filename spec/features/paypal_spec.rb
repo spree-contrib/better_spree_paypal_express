@@ -203,7 +203,7 @@ describe "PayPal", :js => true do
         visit '/admin'
         click_link Spree::Order.last.number
         click_link "Payments"
-        click_link "PayPal"
+        find("#payment_1 a").click # Hackish fix for #77
         click_link "Refund"
       end
 
