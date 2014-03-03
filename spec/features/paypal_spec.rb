@@ -179,7 +179,7 @@ describe "PayPal", :js => true do
     stub_authorization!
 
     context "refunding payments" do
-      before do
+      before :each do
         visit spree.root_path
         click_link 'iPad'
         click_button 'Add To Cart'
@@ -203,7 +203,7 @@ describe "PayPal", :js => true do
         visit '/admin'
         click_link Spree::Order.last.number
         click_link "Payments"
-        click_link "PayPal"
+        find("#content").find("table").first("a").click # this clicks the first payment
         click_link "Refund"
       end
 
@@ -211,12 +211,22 @@ describe "PayPal", :js => true do
         click_button "Refund"
         page.should have_content("PayPal refund successful")
 
-        payment = Spree::Payment.last
+        refund_payment = Spree::Payment.last
+        refund_payment.source.class.name.should eql("Spree::Payment")
+
+        payment = refund_payment.source
+        payment.source.class.name.should eql("Spree::PaypalExpressCheckout")
+
         source = payment.source
         source.refund_transaction_id.should_not be_blank
         source.refunded_at.should_not be_blank
         source.state.should eql("refunded")
         source.refund_type.should eql("Full")
+
+        # regression test for #82
+        within("table") do
+          page.should have_content(payment.display_amount.to_html)
+        end
       end
 
       it "can refund payments partially" do
@@ -229,15 +239,32 @@ describe "PayPal", :js => true do
         source = payment.source
         source.refund_transaction_id.should_not be_blank
         source.refunded_at.should_not be_blank
-        source.state.should eql("refunded")
+        source.state.should eql("partial")
         # ... a partial refund
         source.refund_type.should eql("Partial")
+      end
+
+      it "can do a full refund after a partial" do
+        original_payment = Spree::Payment.last
+        fill_in "Amount", :with => original_payment.amount - 1
+        click_button "Refund"
+        page.should have_content("PayPal refund successful")
+
+        find("#content").find("table").first("a").click
+        click_link "Refund"
+
+        find("#refund_amount").value.should eql("1.0")
+        click_button "Refund"
+        page.should have_content("PayPal refund successful")
+
+        payment = Spree::Payment.last
+        payment.source.source.state.should eql("refunded")
       end
 
       it "errors when given an invalid refund amount" do
         fill_in "Amount", :with => "lol"
         click_button "Refund"
-        page.should have_content("PayPal refund unsuccessful (The partial refund amount is not valid)")
+        page.should have_content("PayPal refund unsuccessful (The partial refund amount must be a positive amount)")
       end
     end
   end

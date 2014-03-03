@@ -19,9 +19,9 @@
           <small><em><%= Spree.t(:original_amount, :scope => 'paypal', :amount => @payment.display_amount) %></em></small><br>
           <% symbol = ::Money.new(1, Spree::Config[:currency]).symbol %>
           <% if Spree::Config[:currency_symbol_position] == "before" %>
-            <%= symbol %><%= text_field_tag 'refund_amount', @payment.amount %>
+            <%= symbol %><%= text_field_tag 'refund_amount', @refund_amount %>
           <% else %>
-            <%= text_field_tag 'refund_amount', @payment.amount %><%= symbol %>
+            <%= text_field_tag 'refund_amount', @refund_amount %><%= symbol %>
           <% end %>
         </div>
         <%= button Spree.t(:refund, :scope => 'paypal'), 'icon-dollar' %>
