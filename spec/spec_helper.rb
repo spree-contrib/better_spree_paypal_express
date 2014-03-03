@@ -22,8 +22,16 @@ require 'ffaker'
 require 'pry'
 require 'capybara/rspec'
 require 'capybara/rails'
+
+# To stop these warnings:
+# WARN: tilt autoloading 'sass' in a non thread-safe way; explicit require 'sass' suggested.
+# WARN: tilt autoloading 'coffee_script' in a non thread-safe way; explicit require 'coffee_script' suggested.
+require 'coffee_script'
+require 'sass'
+
+
 require 'capybara/poltergeist'
- 
+
 Capybara.javascript_driver = :poltergeist
 Capybara.default_wait_time = 15
 
