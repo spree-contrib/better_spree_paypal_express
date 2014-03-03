@@ -203,7 +203,7 @@ describe "PayPal", :js => true do
         visit '/admin'
         click_link Spree::Order.last.number
         click_link "Payments"
-        click_link "PayPal"
+        find("#content").find("table").first("a").click # this clicks the first payment
         click_link "Refund"
       end
 
@@ -217,6 +217,11 @@ describe "PayPal", :js => true do
         source.refunded_at.should_not be_blank
         source.state.should eql("refunded")
         source.refund_type.should eql("Full")
+
+        # regression test for #82
+        within("table") do
+          page.should have_content(payment.display_amount.to_html)
+        end
       end
 
       it "can refund payments partially" do
