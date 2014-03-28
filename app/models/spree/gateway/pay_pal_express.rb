@@ -26,48 +26,16 @@ module Spree
       provider_class.new
     end
 
-    def auto_capture?
-      true
-    end
-
     def method_type
       'paypal'
     end
 
     def purchase(amount, express_checkout, gateway_options={})
-      pp_details_request = provider.build_get_express_checkout_details({
-        :Token => express_checkout.token
-      })
-      pp_details_response = provider.get_express_checkout_details(pp_details_request)
+      create_transaction(amount, express_checkout, "Sale")
+    end
 
-      pp_request = provider.build_do_express_checkout_payment({
-        :DoExpressCheckoutPaymentRequestDetails => {
-          :PaymentAction => "Sale",
-          :Token => express_checkout.token,
-          :PayerID => express_checkout.payer_id,
-          :PaymentDetails => pp_details_response.get_express_checkout_details_response_details.PaymentDetails
-        }
-      })
-
-      pp_response = provider.do_express_checkout_payment(pp_request)
-      if pp_response.success?
-        # We need to store the transaction id for the future.
-        # This is mainly so we can use it later on to refund the payment if the user wishes.
-        transaction_id = pp_response.do_express_checkout_payment_response_details.payment_info.first.transaction_id
-        express_checkout.update_column(:transaction_id, transaction_id)
-        # This is rather hackish, required for payment/processing handle_response code.
-        Class.new do
-          def success?; true; end
-          def authorization; nil; end
-        end.new
-      else
-        class << pp_response
-          def to_s
-            errors.map(&:long_message).join(" ")
-          end
-        end
-        pp_response
-      end
+    def authorize(amount, express_checkout, gateway_options={})
+      create_transaction(amount, express_checkout, "Authorization")
     end
 
     def refund(payment, amount)
@@ -99,6 +67,44 @@ module Spree
       end
       refund_transaction_response
     end
+    private
+
+    def create_transaction(amount, express_checkout, transaction_type)
+      pp_details_request = provider.build_get_express_checkout_details({
+          :Token => express_checkout.token
+      })
+      pp_details_response = provider.get_express_checkout_details(pp_details_request)
+
+      pp_request = provider.build_do_express_checkout_payment({
+          :DoExpressCheckoutPaymentRequestDetails => {
+              :PaymentAction => transaction_type,
+              :Token => express_checkout.token,
+              :PayerID => express_checkout.payer_id,
+              :PaymentDetails => pp_details_response.get_express_checkout_details_response_details.PaymentDetails
+          }
+      })
+
+      pp_response = provider.do_express_checkout_payment(pp_request)
+      if pp_response.success?
+        # We need to store the transaction id for the future.
+        # This is mainly so we can use it later on to refund the payment if the user wishes.
+        transaction_id = pp_response.do_express_checkout_payment_response_details.payment_info.first.transaction_id
+        express_checkout.update_column(:transaction_id, transaction_id)
+        # This is rather hackish, required for payment/processing handle_response code.
+        Class.new do
+          def success?; true; end
+          def authorization; nil; end
+        end.new
+      else
+        class << pp_response
+          def to_s
+            errors.map(&:long_message).join(" ")
+          end
+        end
+        pp_response
+      end
+    end
+
   end
 end
 
