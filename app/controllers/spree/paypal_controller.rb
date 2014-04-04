@@ -150,7 +150,7 @@ module Spree
     end
 
     def address_required?
-      !payment_method.preferred_solution.eql?('Mark')
+      payment_method.preferred_solution.eql?('Sole')
     end
   end
 end
