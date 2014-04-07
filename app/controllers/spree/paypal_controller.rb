@@ -2,18 +2,7 @@ module Spree
   class PaypalController < StoreController
     def express
       order = current_order || raise(ActiveRecord::RecordNotFound)
-      items = order.line_items.map do |item|
-        {
-          :Name => item.product.name,
-          :Number => item.variant.sku,
-          :Quantity => item.quantity,
-          :Amount => {
-            :currencyID => order.currency,
-            :value => item.price
-          },
-          :ItemCategory => "Physical"
-        }
-      end
+      items = order.line_items.map(&method(:line_item))
 
       tax_adjustments = order.adjustments.tax.additional
       shipping_adjustments = order.adjustments.shipping
@@ -37,16 +26,7 @@ module Spree
       items.reject! do |item|
         item[:Amount][:value].zero?
       end
-      pp_request = provider.build_set_express_checkout({
-        :SetExpressCheckoutRequestDetails => {
-          :InvoiceID => order.number,
-          :ReturnURL => confirm_paypal_url(:payment_method_id => params[:payment_method_id], :utm_nooverride => 1),
-          :CancelURL =>  cancel_paypal_url,
-          :SolutionType => payment_method.preferred_solution.present? ? payment_method.preferred_solution : "Mark",
-          :LandingPage => payment_method.preferred_landing_page.present? ? payment_method.preferred_landing_page : "Billing",
-          :cppheaderimage => payment_method.preferred_logourl.present? ? payment_method.preferred_logourl : "",
-          :PaymentDetails => [payment_details(items)]
-        }})
+      pp_request = provider.build_set_express_checkout(express_checkout_request_details(order, items))
 
       begin
         pp_response = provider.set_express_checkout(pp_request)
@@ -89,6 +69,31 @@ module Spree
     end
 
     private
+
+    def line_item item
+      {
+          :Name => item.product.name,
+          :Number => item.variant.sku,
+          :Quantity => item.quantity,
+          :Amount => {
+              :currencyID => item.order.currency,
+              :value => item.price
+          },
+          :ItemCategory => "Physical"
+      }
+    end
+
+    def express_checkout_request_details order, items
+      { :SetExpressCheckoutRequestDetails => {
+          :InvoiceID => order.number,
+          :ReturnURL => confirm_paypal_url(:payment_method_id => params[:payment_method_id], :utm_nooverride => 1),
+          :CancelURL =>  cancel_paypal_url,
+          :SolutionType => payment_method.preferred_solution.present? ? payment_method.preferred_solution : "Mark",
+          :LandingPage => payment_method.preferred_landing_page.present? ? payment_method.preferred_landing_page : "Billing",
+          :cppheaderimage => payment_method.preferred_logourl.present? ? payment_method.preferred_logourl : "",
+          :PaymentDetails => [payment_details(items)]
+      }}
+    end
 
     def payment_method
       Spree::PaymentMethod.find(params[:payment_method_id])
