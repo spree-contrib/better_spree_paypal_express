@@ -99,7 +99,7 @@ module Spree
     end
 
     def credit(amount, source, response_code={}, options={})
-      amount /= 100 #was in cents
+      amount /= 100.to_f #was in cents
 
       total = (options[:shipping] + options[:tax] + options[:subtotal] + options[:discount]) / 100
       refund_type = total == amount ? 'Full' : 'Partial'

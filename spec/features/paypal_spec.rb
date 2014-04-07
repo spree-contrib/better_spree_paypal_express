@@ -274,14 +274,14 @@ describe "PayPal", :js => true do
       it 'can automatically credit payment when payment_profiles is supported' do
         # create 1st adjustment
         click_link "New Adjustment"
-        fill_in "adjustment_amount", :with => "-10"
+        fill_in "adjustment_amount", :with => "-10.90"
         fill_in "adjustment_label", :with => "rebate"
         click_button "Continue"
         page.should have_content("successfully created!")
 
         # can credit first time
         visit spree.admin_order_payments_path(Spree::Order.last.number)
-        page.should have_content('CREDIT OWED: -$10.00')
+        page.should have_content('CREDIT OWED: -$10.90')
         click_icon :credit
         page.should have_content 'Payment Updated'
 
