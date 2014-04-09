@@ -1,9 +1,11 @@
 require 'paypal-sdk-merchant'
 module Spree
   class Gateway::PayPalExpress < Gateway
+
     preference :login, :string
     preference :password, :string
     preference :signature, :string
+    preference :seller_account_email, :string
     preference :server, :string, default: 'sandbox'
     preference :solution, :string, default: 'Mark'
     preference :landing_page, :string, default: 'Billing'
@@ -20,6 +22,7 @@ module Spree
     def provider
       ::PayPal::SDK.configure(
         :mode      => preferred_server.present? ? preferred_server : "sandbox",
+        :subject   => preferred_seller_account_email.present? ? preferred_seller_account_email : nil,
         :username  => preferred_login,
         :password  => preferred_password,
         :signature => preferred_signature)
