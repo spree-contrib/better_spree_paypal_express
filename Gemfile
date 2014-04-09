@@ -10,6 +10,7 @@ group :test do
  gem 'capybara'
  gem 'poltergeist'
  gem 'sqlite3'
+ gem 'byebug'
 end
 
 gemspec
