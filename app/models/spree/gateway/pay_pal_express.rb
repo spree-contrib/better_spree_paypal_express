@@ -9,6 +9,7 @@ module Spree
     preference :landing_page, :string, default: 'Billing'
     preference :logourl, :string, default: ''
 
+
     def supports?(source)
       true
     end
@@ -30,12 +31,42 @@ module Spree
       'paypal'
     end
 
+    def payment_profiles_supported?
+      true
+    end
+
     def purchase(amount, express_checkout, gateway_options={})
       create_transaction(amount, express_checkout, "Sale")
     end
 
     def authorize(amount, express_checkout, gateway_options={})
       create_transaction(amount, express_checkout, "Authorization")
+    end
+
+    def capture(payment, source, gateway_options)
+      capture_request = provider.build_do_capture({
+              :AuthorizationID => source.transaction_id,
+              :Amount => {
+                  :currencyID => payment.currency,
+                  :value => payment.amount },
+              :CompleteType => "Complete"
+      })
+      capture_response = provider.do_capture(capture_request)
+
+      if capture_response.success?
+        # This is rather hackish, required for payment/processing handle_response code.
+        Class.new do
+          def success?; true; end
+          def authorization; nil; end
+        end.new
+      else
+        class << capture_response
+          def to_s
+            errors.map(&:long_message).join(" ")
+          end
+        end
+        capture_response
+      end
     end
 
     def refund(payment, amount)
