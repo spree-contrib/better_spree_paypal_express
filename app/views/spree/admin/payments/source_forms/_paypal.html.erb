@@ -1,6 +1,3 @@
-<div id='paypal-warning' style="display:none">
+<fieldset id="<%= payment_method.name.parameterize %>" class="no-border-bottom">
   <strong><%= Spree.t('no_payment_via_admin_backend', :scope => 'paypal') %></strong>
-</div>
-<script>
-  SpreePaypalExpress.paymentMethodID = "<%= payment_method.id %>"
-</script>
+</fieldset>
