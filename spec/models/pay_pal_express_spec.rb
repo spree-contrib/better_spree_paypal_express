@@ -53,6 +53,8 @@ describe Spree::Gateway::PayPalExpress do
 
     # Test for #4
     it "fails" do
+      # stub persist_invalid as it causes DatabaseCleaner.clean to go for a toss
+      payment.stub :persist_invalid => nil
       response = double('pp_response', :success? => false, 
                           :errors => [double('pp_response_error', :long_message => "An error goes here.")])
       provider.should_receive(:do_express_checkout_payment).and_return(response)
