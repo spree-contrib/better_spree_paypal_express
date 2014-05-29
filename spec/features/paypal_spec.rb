@@ -34,13 +34,13 @@ describe "PayPal", :js => true do
       find("#loadLogin").click
     end
   rescue Capybara::Poltergeist::JavascriptError => e
-    Rails.logger.error "Paypal login raised javascript errors - #{e.message}"
+    Rails.logger.error "Errors IGNORED for this page - #{e.message}"
   end
 
   def find_and_click_paypal_button
     find("#paypal_button").click
   rescue Capybara::Poltergeist::JavascriptError => e
-    Rails.logger.error "Paypal button find raised javascript errors - #{e.message}"
+    Rails.logger.error "Errors IGNORED for this page - #{e.message}"
   end
 
   it "pays for an order successfully" do
