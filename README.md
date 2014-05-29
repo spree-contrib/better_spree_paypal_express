@@ -8,7 +8,7 @@ Behind-the-scenes, this extension uses [PayPal's Merchant Ruby SDK](https://gith
 
 1. Add this extension to your Gemfile with this line:
 
-        gem 'spree_paypal_express', :github => "radar/better_spree_paypal_express", :branch => "2-2-stable"
+        gem 'spree_paypal_express', :github => "spree-contrib/better_spree_paypal_express", :branch => "2-2-stable"
 
 2. Install the gem using Bundler:
 
@@ -122,7 +122,7 @@ Starting point:
 * Ensure specs pass by running `bundle exec rspec spec`
 * Submit your pull request
 
-Copyright (c) 2013 Spree Commerce and contributors, released under the [New BSD License][3]
+Copyright (c) 2014 Spree Commerce and contributors, released under the [New BSD License][3]
 
 [1]: http://www.fsf.org/licensing/essays/free-sw.html
 [2]: https://github.com/spree/better_spree_paypal_express/issues
