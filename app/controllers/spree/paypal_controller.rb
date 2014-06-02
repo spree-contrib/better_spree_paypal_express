@@ -126,7 +126,7 @@ module Spree
           },
           :ShippingTotal => {
             :currencyID => current_order.currency,
-            :value => current_order.ship_total
+            :value => current_order.shipments.map(&:discounted_cost).sum
           },
           :TaxTotal => {
             :currencyID => current_order.currency,
