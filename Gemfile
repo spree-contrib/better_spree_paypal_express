@@ -1,7 +1,7 @@
 source 'https://rubygems.org'
 
-gem 'spree', :github => 'godaddy/spree', :branch => '1838', path: '../spree' # TODO UPGRADE: REMOVE PATH
-gem 'spree_auth_devise', github: 'spree/spree_auth_devise', :branch => '2-2-stable', path: '../spree_auth_devise' # TODO UPGRADE: REMOVE PATH
+gem 'spree', :github => 'godaddy/spree', :branch => '2-2-nemo-stable'
+gem 'spree_auth_devise', github: 'spree/spree_auth_devise', :branch => '2-2-stable'
 
 group :test do
  gem 'simplecov-rcov'
