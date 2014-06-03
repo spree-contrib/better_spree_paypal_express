@@ -207,8 +207,9 @@ describe "PayPal", :js => true do
         fill_in "login_password", :with => "thequickbrownfox"
         click_button "Log In"
         find("#continue_abovefold").click   # Because there's TWO continue buttons.
-        sleep 10
-        page.should have_content("Your order has been processed successfully")
+        using_wait_time(30.seconds) do
+          page.should have_content("Your order has been processed successfully")
+        end
 
         visit '/admin'
         @order_num = Spree::Order.last.number
