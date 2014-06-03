@@ -4,10 +4,10 @@ module Spree
       order = current_order || raise(ActiveRecord::RecordNotFound)
       items = order.line_items.map(&method(:line_item))
 
-      tax_adjustments = order.adjustments.tax.additional
-      shipping_adjustments = order.adjustments.shipping
+      tax_adjustments = order.all_adjustments.tax.additional
+      shipping_adjustments = order.all_adjustments.shipping
 
-      order.adjustments.eligible.each do |adjustment|
+      order.all_adjustments.eligible.each do |adjustment|
         next if (tax_adjustments + shipping_adjustments).include?(adjustment)
         items << {
           :Name => adjustment.label,
@@ -104,7 +104,9 @@ module Spree
     end
 
     def payment_details items
-      item_sum = items.sum { |i| i[:Quantity] * i[:Amount][:value] }
+      shipment_sum = current_order.shipments.map(&:discounted_cost).sum
+      item_sum = current_order.total - shipment_sum - current_order.additional_tax_total
+
       if item_sum.zero?
         # Paypal does not support no items or a zero dollar ItemTotal
         # This results in the order summary being simply "Current purchase"
@@ -126,7 +128,7 @@ module Spree
           },
           :ShippingTotal => {
             :currencyID => current_order.currency,
-            :value => current_order.shipments.map(&:discounted_cost).sum
+            :value => shipment_sum,
           },
           :TaxTotal => {
             :currencyID => current_order.currency,
