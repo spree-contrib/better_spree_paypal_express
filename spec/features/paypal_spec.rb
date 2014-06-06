@@ -33,7 +33,16 @@ describe "PayPal", :js => true do
     unless page.has_selector?("#login_email")
       find("#loadLogin").click
     end
+  rescue Capybara::Poltergeist::JavascriptError => e
+    Rails.logger.error "Errors IGNORED for this page - #{e.message}"
   end
+
+  def find_and_click_paypal_button
+    find("#paypal_button").click
+  rescue Capybara::Poltergeist::JavascriptError => e
+    Rails.logger.error "Errors IGNORED for this page - #{e.message}"
+  end
+
   it "pays for an order successfully" do
     visit spree.root_path
     click_link 'iPad'
@@ -47,7 +56,7 @@ describe "PayPal", :js => true do
     click_button "Save and Continue"
     # Delivery step doesn't require any action
     click_button "Save and Continue"
-    find("#paypal_button").click
+    find_and_click_paypal_button
     switch_to_paypal_login
     fill_in "login_email", :with => "pp@spreecommerce.com"
     fill_in "login_password", :with => "thequickbrownfox"
@@ -80,7 +89,7 @@ describe "PayPal", :js => true do
     click_button "Save and Continue"
     # Delivery step doesn't require any action
     click_button "Save and Continue"
-    find("#paypal_button").click
+    find_and_click_paypal_button
     within("#miniCart") do
       page.should have_content("$5 off")
       page.should have_content("$10 on")
@@ -112,7 +121,7 @@ describe "PayPal", :js => true do
       click_button "Save and Continue"
       # Delivery step doesn't require any action
       click_button "Save and Continue"
-      find("#paypal_button").click
+      find_and_click_paypal_button
       within("#miniCart") do
         page.should have_content('iPad')
         page.should_not have_content('iPod')
@@ -144,7 +153,7 @@ describe "PayPal", :js => true do
       click_button "Save and Continue"
       # Delivery step doesn't require any action
       click_button "Save and Continue"
-      find("#paypal_button").click
+      find_and_click_paypal_button
       within("#miniCart") do
         page.should have_content('Current purchase')
       end
@@ -170,7 +179,7 @@ describe "PayPal", :js => true do
       click_button "Save and Continue"
       # Delivery step doesn't require any action
       click_button "Save and Continue"
-      find("#paypal_button").click
+      find_and_click_paypal_button
       page.should have_content("PayPal failed. Security header is not valid")
     end
   end
@@ -192,16 +201,19 @@ describe "PayPal", :js => true do
         click_button "Save and Continue"
         # Delivery step doesn't require any action
         click_button "Save and Continue"
-        find("#paypal_button").click
+        find_and_click_paypal_button
         switch_to_paypal_login
         fill_in "login_email", :with => "pp@spreecommerce.com"
         fill_in "login_password", :with => "thequickbrownfox"
         click_button "Log In"
         find("#continue_abovefold").click   # Because there's TWO continue buttons.
-        page.should have_content("Your order has been processed successfully")
+        using_wait_time(30.seconds) do
+          page.should have_content("Your order has been processed successfully")
+        end
 
         visit '/admin'
-        click_link Spree::Order.last.number
+        @order_num = Spree::Order.last.number
+        click_link @order_num
         click_link "Payments"
         find("#content").find("table").first("a").click # this clicks the first payment
         click_link "Refund"
@@ -211,7 +223,7 @@ describe "PayPal", :js => true do
         click_button "Refund"
         page.should have_content("PayPal refund successful")
 
-        payment = Spree::Payment.last
+        payment = Spree::Order.find_by_number(@order_num).payments.first
         source = payment.source
         source.refund_transaction_id.should_not be_blank
         source.refunded_at.should_not be_blank
@@ -225,7 +237,7 @@ describe "PayPal", :js => true do
       end
 
       it "can refund payments partially" do
-        payment = Spree::Payment.last
+        payment = Spree::Order.find_by_number(@order_num).payments.first
         # Take a dollar off, which should cause refund type to be...
         fill_in "Amount", :with => payment.amount - 1
         click_button "Refund"
