@@ -72,6 +72,8 @@ module Spree
 
     def refund(payment, amount)
       refund_type = payment.amount == amount.to_f ? "Full" : "Partial"
+      refund_state = refund_type == "Full" || amount == (payment.amount - payment.offsets_total.abs) ? "refunded" : "partial"
+
       refund_transaction = provider.build_refund_transaction({
         :TransactionID => payment.source.transaction_id,
         :RefundType => refund_type,
@@ -84,7 +86,7 @@ module Spree
         payment.source.update_attributes({
           :refunded_at => Time.now,
           :refund_transaction_id => refund_transaction_response.RefundTransactionID,
-          :state => "refunded",
+          :state => refund_state,
           :refund_type => refund_type
         } )
 
