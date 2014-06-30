@@ -1,19 +1,31 @@
 //= require spree/frontend
 
 SpreePaypalExpress = {
-  hidePaymentSaveAndContinueButton: function(paymentMethod) {
-    if (SpreePaypalExpress.paymentMethodID && paymentMethod.val() == SpreePaypalExpress.paymentMethodID) {
-      $('.continue').hide();
+  updateSaveAndContinueVisibility: function() {
+    if (this.isButtonHidden()) {
+      $(this).trigger('hideSaveAndContinue')
     } else {
-      $('.continue').show();
+      $(this).trigger('showSaveAndContinue')
     }
+  },
+  isButtonHidden: function () {
+    paymentMethod = this.checkedPaymentMethod();
+    return (!$('#use_existing_card_yes:checked').length && SpreePaypalExpress.paymentMethodID && paymentMethod.val() == SpreePaypalExpress.paymentMethodID);
+  },
+  checkedPaymentMethod: function() {
+    return $('div[data-hook="checkout_payment_step"] input[type="radio"][name="order[payments_attributes][][payment_method_id]"]:checked');
+  },
+  hideSaveAndContinue: function() {
+    $('.continue').hide();
+  },
+  showSaveAndContinue: function() {
+    $('.continue').show();
   }
 }
 
 $(document).ready(function() {
-  checkedPaymentMethod = $('div[data-hook="checkout_payment_step"] input[type="radio"]:checked');
-  SpreePaypalExpress.hidePaymentSaveAndContinueButton(checkedPaymentMethod);
+  SpreePaypalExpress.updateSaveAndContinueVisibility();
   paymentMethods = $('div[data-hook="checkout_payment_step"] input[type="radio"]').click(function (e) {
-    SpreePaypalExpress.hidePaymentSaveAndContinueButton($(e.target));
+    SpreePaypalExpress.updateSaveAndContinueVisibility();
   });
 })
