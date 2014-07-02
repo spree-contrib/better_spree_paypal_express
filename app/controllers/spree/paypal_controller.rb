@@ -119,6 +119,8 @@ module Spree
       tax_adjustments = tax_adjustments.additional if tax_adjustments.respond_to?(:additional)
       tax_adjustments_total = tax_adjustments.sum(:amount)
 
+      transaction_type = payment_method.auto_capture? ? 'Sale' : 'Authorization'
+
       if item_sum.zero?
         # Paypal does not support no items or a zero dollar ItemTotal
         # This results in the order summary being simply "Current purchase"
@@ -149,7 +151,7 @@ module Spree
           :ShipToAddress => address_options,
           :PaymentDetailsItem => items,
           :ShippingMethod => "Shipping Method Name Goes Here",
-          :PaymentAction => "Sale"
+          :PaymentAction => transaction_type
         }
       end
     end
