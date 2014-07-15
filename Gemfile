@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-gem 'spree', '~> 2.2.3.0'
+gem 'spree', github: 'godaddy/spree', branch: '2-2-nemo-stable'
 gem 'spree_auth_devise', github: 'spree/spree_auth_devise', :branch => '2-2-stable'
 
 group :test do
