@@ -23,7 +23,7 @@ describe "PayPal", :js => true do
       select "United States of America", :from => "order_bill_address_attributes_country_id"
       select "Alabama", :from => "order_bill_address_attributes_state_id"
       fill_in "Zip", :with => "35005"
-      fill_in "Phone", :with => "555-AME-RICA"
+      fill_in "Phone", :with => "555-123-4567"
     end
   end
 
@@ -34,6 +34,7 @@ describe "PayPal", :js => true do
       find("#loadLogin").click
     end
   end
+
   it "pays for an order successfully" do
     visit spree.root_path
     click_link 'iPad'
@@ -56,6 +57,39 @@ describe "PayPal", :js => true do
     page.should have_content("Your order has been processed successfully")
 
     Spree::Payment.last.source.transaction_id.should_not be_blank
+  end
+
+  context "with 'Sole' solution type" do
+    before do
+      @gateway.preferred_solution = 'Sole'
+    end
+
+    it "passes user details to PayPal" do
+      visit spree.root_path
+      click_link 'iPad'
+      click_button 'Add To Cart'
+      click_button 'Checkout'
+      within("#guest_checkout") do
+        fill_in "Email", :with => "test@example.com"
+        click_button 'Continue'
+      end
+      fill_in_billing
+      click_button "Save and Continue"
+      # Delivery step doesn't require any action
+      click_button "Save and Continue"
+      find("#paypal_button").click
+
+      page.should have_selector '#billingInfo', text: 'Test User'
+      page.should have_selector '#billingInfo', text: '1 User Lane'
+      page.should have_selector '#billingInfo', text: 'Adamsville, AL 35005'
+      page.should have_selector '#billingInfo', text: 'United States'
+      page.should have_field 'email', with: 'test@example.com'
+
+      # PayPal arbitrarily removes or does not remove the hypenation in phone numbers,
+      # so our test needs to accept both cases
+      page.should have_field 'H_PhoneNumberUS'
+      page.find('#H_PhoneNumberUS').value.gsub('-', '').should == '5551234567'
+    end
   end
 
   it "includes adjustments in PayPal summary" do
