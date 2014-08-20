@@ -6,10 +6,11 @@ module Spree
       order = current_order || raise(ActiveRecord::RecordNotFound)
       items = order.line_items.map(&method(:line_item))
 
-      tax_adjustments = order.all_adjustments.tax.additional
-      shipping_adjustments = order.all_adjustments.shipping
+      additional_adjustments = order.all_adjustments.additional
+      tax_adjustments = additional_adjustments.tax
+      shipping_adjustments = additional_adjustments.shipping
 
-      order.all_adjustments.eligible.each do |adjustment|
+      additional_adjustments.eligible.each do |adjustment|
         next if (tax_adjustments + shipping_adjustments).include?(adjustment)
         items << {
           :Name => adjustment.label,
