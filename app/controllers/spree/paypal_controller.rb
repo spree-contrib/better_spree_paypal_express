@@ -89,6 +89,7 @@ module Spree
     def express_checkout_request_details order, items
       { :SetExpressCheckoutRequestDetails => {
           :InvoiceID => order.number,
+          :BuyerEmail => order.email,
           :ReturnURL => confirm_paypal_url(:payment_method_id => params[:payment_method_id], :utm_nooverride => 1),
           :CancelURL =>  cancel_paypal_url,
           :SolutionType => payment_method.preferred_solution.present? ? payment_method.preferred_solution : "Mark",
@@ -160,7 +161,7 @@ module Spree
           :Street1 => current_order.bill_address.address1,
           :Street2 => current_order.bill_address.address2,
           :CityName => current_order.bill_address.city,
-          # :phone => current_order.bill_address.phone,
+          :Phone => current_order.bill_address.phone,
           :StateOrProvince => current_order.bill_address.state_text,
           :Country => current_order.bill_address.country.iso,
           :PostalCode => current_order.bill_address.zipcode
