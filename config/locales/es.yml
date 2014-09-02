@@ -1,0 +1,21 @@
+---
+es:
+  spree:
+    paypal:
+      already_refunded: "Este pago ha sido reembolsado y ahora no acción puede ser ejecutado en ello."
+      no_payment_via_admin_backend: "No se puede cobrar cuentas de PayPal por medio del admin en este momento."
+      transaction: "Transacción de PayPal"
+      payer_id: "Payer ID (identificación del comprador)"
+      transaction_id: "Transaction ID (identificación de la transacción)"
+      token: "Token"
+      refund: "Reembolso"
+      refund_amount: "Cantidad"
+      original_amount: "Cantidad original: %{amount}"
+      refund_successful: "Reembolso de PayPal exitoso"
+      refund_unsuccessful: "No se pudo rembolsar el pago de PayPal"
+      actions:
+        refund: "Reembolso"
+      flash:
+        cancel: "No quieres usar PayPal? No hay problema."
+        connection_failed: "No se pudo conectar con PayPal."
+        generic_error: "PayPal no funcionó. %{reasons}"
