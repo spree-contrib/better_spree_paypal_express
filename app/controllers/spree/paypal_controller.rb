@@ -87,17 +87,23 @@ module Spree
     end
 
     def express_checkout_request_details order, items
-      { :SetExpressCheckoutRequestDetails => {
-          :InvoiceID => order.number,
-          :BuyerEmail => order.email,
-          :ReturnURL => confirm_paypal_url(:payment_method_id => params[:payment_method_id], :utm_nooverride => 1),
-          :CancelURL =>  cancel_paypal_url,
-          :SolutionType => payment_method.preferred_solution.present? ? payment_method.preferred_solution : "Mark",
-          :LandingPage => payment_method.preferred_landing_page.present? ? payment_method.preferred_landing_page : "Billing",
-          :cppheaderimage => payment_method.preferred_logourl.present? ? payment_method.preferred_logourl : "",
-          :NoShipping => 1,
-          :PaymentDetails => [payment_details(items)]
-      }}
+      request_details = {
+        :InvoiceID => order.number,
+        :BuyerEmail => order.email,
+        :ReturnURL => confirm_paypal_url(:payment_method_id => params[:payment_method_id], :utm_nooverride => 1),
+        :CancelURL =>  cancel_paypal_url,
+        :SolutionType => payment_method.preferred_solution.present? ? payment_method.preferred_solution : "Mark",
+        :LandingPage => payment_method.preferred_landing_page.present? ? payment_method.preferred_landing_page : "Billing",
+        :cppheaderimage => payment_method.preferred_logourl.present? ? payment_method.preferred_logourl : "",
+        :NoShipping => payment_method.preferred_no_shipping.present? ? payment_method.preferred_no_shipping : '1',
+        :PaymentDetails => [payment_details(items)]
+      }
+
+      # Optional fields without set defaults.
+      request_details[:AddressOverride] = payment_method.preferred_address_override if payment_method.preferred_address_override.present?
+      request_details[:ReqConfirmShipping] = payment_method.preferred_req_confirmed_address if payment_method.preferred_req_confirmed_address.present?
+
+      { :SetExpressCheckoutRequestDetails => request_details }
     end
 
     def payment_method
@@ -156,15 +162,17 @@ module Spree
     def address_options
       return {} unless address_required?
 
+      address = current_order.use_billing ? current_order.bill_address : current_order.ship_address
+
       {
-          :Name => current_order.bill_address.try(:full_name),
-          :Street1 => current_order.bill_address.address1,
-          :Street2 => current_order.bill_address.address2,
-          :CityName => current_order.bill_address.city,
-          :Phone => current_order.bill_address.phone,
-          :StateOrProvince => current_order.bill_address.state_text,
-          :Country => current_order.bill_address.country.iso,
-          :PostalCode => current_order.bill_address.zipcode
+          :Name => address.try(:full_name),
+          :Street1 => address.address1,
+          :Street2 => address.address2,
+          :CityName => address.city,
+          :Phone => address.phone,
+          :StateOrProvince => address.state_text,
+          :Country => address.country.iso,
+          :PostalCode => address.zipcode
       }
     end
 
@@ -173,7 +181,8 @@ module Spree
     end
 
     def address_required?
-      payment_method.preferred_solution.eql?('Sole')
+      payment_method.preferred_solution.eql?('Sole') \
+        || payment_method.preferred_address_override.eql?('1')
     end
   end
 end
