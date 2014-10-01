@@ -22,6 +22,7 @@ require 'ffaker'
 require 'pry'
 require 'capybara/rspec'
 require 'capybara/rails'
+require 'capybara-screenshot/rspec'
 
 # To stop these warnings:
 # WARN: tilt autoloading 'sass' in a non thread-safe way; explicit require 'sass' suggested.
