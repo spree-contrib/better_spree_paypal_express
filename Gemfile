@@ -6,9 +6,9 @@ gem 'sqlite3'
 gem 'pg'
 
 group :test do
- gem 'yarjuf'
  gem 'require_all'
  gem 'capybara'
+ gem 'capybara-screenshot'
  gem 'poltergeist'
 end
 
