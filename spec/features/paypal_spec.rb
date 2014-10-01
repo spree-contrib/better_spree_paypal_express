@@ -97,7 +97,7 @@ describe "PayPal", :js => true do
       page.should have_selector '[data-hook=order-bill-address] .adr', text: '1 User Lane'
       page.should have_selector '[data-hook=order-bill-address] .adr', text: 'Adamsville AL 35005'
       page.should have_selector '[data-hook=order-bill-address] .adr', text: 'United States'
-      page.should have_selector '[data-hook=order-bill-address] .tel', text: '555-AME-RICA'
+      page.should have_selector '[data-hook=order-bill-address] .tel', text: '555-123-4567'
     end
   end
 
@@ -218,6 +218,7 @@ describe "PayPal", :js => true do
       find("#paypal_button").click
 
       within_transaction_cart do
+
         page.should have_content('iPad')
         page.should_not have_content('iPod')
       end
