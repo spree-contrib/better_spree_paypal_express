@@ -30,9 +30,22 @@ describe "PayPal", :js => true do
   def switch_to_paypal_login
     # If you go through a payment once in the sandbox, it remembers your preferred setting.
     # It defaults to the *wrong* setting for the first time, so we need to have this method.
-    unless page.has_selector?("#login_email")
+    unless page.has_selector?("#login #email")
       find("#loadLogin").click
     end
+  end
+
+  def login_to_paypal
+    within("#loginForm") do
+      fill_in "Email", :with => "pp@spreecommerce.com"
+      fill_in "Password", :with => "thequickbrownfox"
+      click_button "Log in to PayPal"
+    end
+  end
+
+  def within_transaction_cart(&block)
+    find(".transactionDetails").click
+    within(".transctionCartDetails") { block.call }
   end
 
   it "pays for an order successfully" do
@@ -50,10 +63,8 @@ describe "PayPal", :js => true do
     click_button "Save and Continue"
     find("#paypal_button").click
     switch_to_paypal_login
-    fill_in "login_email", :with => "pp@spreecommerce.com"
-    fill_in "login_password", :with => "thequickbrownfox"
-    click_button "Log In"
-    find("#continue_abovefold").click   # Because there's TWO continue buttons.
+    login_to_paypal
+    click_button "Pay Now"
     page.should have_content("Your order has been processed successfully")
 
     Spree::Payment.last.source.transaction_id.should_not be_blank
@@ -79,16 +90,14 @@ describe "PayPal", :js => true do
       click_button "Save and Continue"
       find("#paypal_button").click
 
-      page.should have_selector '#billingInfo', text: 'Test User'
-      page.should have_selector '#billingInfo', text: '1 User Lane'
-      page.should have_selector '#billingInfo', text: 'Adamsville, AL 35005'
-      page.should have_selector '#billingInfo', text: 'United States'
-      page.should have_field 'email', with: 'test@example.com'
+      login_to_paypal
+      click_button "Pay Now"
 
-      # PayPal arbitrarily removes or does not remove the hypenation in phone numbers,
-      # so our test needs to accept both cases
-      page.should have_field 'H_PhoneNumberUS'
-      page.find('#H_PhoneNumberUS').value.gsub('-', '').should == '5551234567'
+      page.should have_selector '[data-hook=order-bill-address] .fn', text: 'Test User'
+      page.should have_selector '[data-hook=order-bill-address] .adr', text: '1 User Lane'
+      page.should have_selector '[data-hook=order-bill-address] .adr', text: 'Adamsville AL 35005'
+      page.should have_selector '[data-hook=order-bill-address] .adr', text: 'United States'
+      page.should have_selector '[data-hook=order-bill-address] .tel', text: '555-123-4567'
     end
   end
 
@@ -115,7 +124,22 @@ describe "PayPal", :js => true do
     # Delivery step doesn't require any action
     click_button "Save and Continue"
     find("#paypal_button").click
-    within("#miniCart") do
+
+    within_transaction_cart do
+      page.should have_content("$5 off")
+      page.should have_content("$10 on")
+    end
+
+    login_to_paypal
+
+    within_transaction_cart do
+      page.should have_content("$5 off")
+      page.should have_content("$10 on")
+    end
+
+    click_button "Pay Now"
+
+    within("[data-hook=order_details_adjustments]") do
       page.should have_content("$5 off")
       page.should have_content("$10 on")
     end
@@ -127,7 +151,7 @@ describe "PayPal", :js => true do
       calculator = Spree::Calculator::FlatPercentItemTotal.new(preferred_flat_percent: 10)
       action = Spree::Promotion::Actions::CreateItemAdjustments.create(:calculator => calculator)
       promotion.actions << action
-    end    
+    end
 
     it "includes line item adjustments in PayPal summary" do
 
@@ -152,7 +176,15 @@ describe "PayPal", :js => true do
       # Delivery step doesn't require any action
       click_button "Save and Continue"
       find("#paypal_button").click
-      within("#miniCart") do
+
+      within_transaction_cart do
+        page.should have_content("10% off")
+      end
+
+      login_to_paypal
+      click_button "Pay Now"
+
+      within("[data-hook=order_details_price_adjustments]") do
         page.should have_content("10% off")
       end
     end
@@ -184,9 +216,24 @@ describe "PayPal", :js => true do
       # Delivery step doesn't require any action
       click_button "Save and Continue"
       find("#paypal_button").click
-      within("#miniCart") do
+
+      within_transaction_cart do
         page.should have_content('iPad')
         page.should_not have_content('iPod')
+      end
+
+      login_to_paypal
+
+      within_transaction_cart do
+        page.should have_content('iPad')
+        page.should_not have_content('iPod')
+      end
+
+      click_button "Pay Now"
+
+      within("#line-items") do
+        page.should have_content('iPad')
+        page.should have_content('iPod')
       end
     end
   end
@@ -216,8 +263,13 @@ describe "PayPal", :js => true do
       # Delivery step doesn't require any action
       click_button "Save and Continue"
       find("#paypal_button").click
-      within("#miniCart") do
-        page.should have_content('Current purchase')
+
+      login_to_paypal
+
+      click_button "Pay Now"
+
+      within("[data-hook=order_details_adjustments]") do
+        page.should have_content('FREE iPad ZOMG!')
       end
     end
   end
@@ -265,10 +317,8 @@ describe "PayPal", :js => true do
         click_button "Save and Continue"
         find("#paypal_button").click
         switch_to_paypal_login
-        fill_in "login_email", :with => "pp@spreecommerce.com"
-        fill_in "login_password", :with => "thequickbrownfox"
-        click_button "Log In"
-        find("#continue_abovefold").click   # Because there's TWO continue buttons.
+        login_to_paypal
+        click_button("Pay Now")
         page.should have_content("Your order has been processed successfully")
 
         visit '/admin'
