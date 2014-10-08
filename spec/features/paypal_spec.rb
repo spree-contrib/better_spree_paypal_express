@@ -14,6 +14,19 @@ describe "PayPal", :js => true do
     FactoryGirl.create(:shipping_method)
   end
 
+  def paypal_layout
+    @paypal_layout ||= begin
+                         page.find("body.pagelogin")
+                         :new_layout
+                       end
+  rescue Capybara::ElementNotFound
+    if page.has_content?("Internal Server Error")
+      page.reload
+    else
+      @paypal_layout = :old_layout
+    end
+  end
+
   def fill_in_billing
     within("#billing") do
       fill_in "First Name", :with => "Test"
@@ -43,25 +56,58 @@ describe "PayPal", :js => true do
     end
   end
 
-  def switch_to_paypal_login
-    # If you go through a payment once in the sandbox, it remembers your preferred setting.
-    # It defaults to the *wrong* setting for the first time, so we need to have this method.
-    unless page.has_selector?("#login #email")
-      find("#loadLogin").click
+  def go_to_paypal
+    find("#paypal_button").click
+
+    # Paypal keeps going back and forth with their design. The HTML is very
+    # different between both.
+    #
+    # This changes the behavior of the specs to match the layout that Paypal
+    # returns to us.
+    if paypal_layout == :new_layout
+      extend NewPaypal unless respond_to?(:login_to_paypal)
+    else
+      extend OldPaypal unless respond_to?(:login_to_paypal)
     end
   end
 
-  def login_to_paypal
-    within("#loginForm") do
-      fill_in "Email", :with => "pp@spreecommerce.com"
-      fill_in "Password", :with => "thequickbrownfox"
-      click_button "Log in to PayPal"
+  module OldPaypal
+    def login_to_paypal
+        fill_in "login_email", :with => "pp@spreecommerce.com"
+        fill_in "login_password", :with => "thequickbrownfox"
+        click_button "Log In"
+    end
+
+    def within_transaction_cart(&block)
+      within("#miniCart") { block.call }
+    end
+
+    def switch_to_paypal_login
+      # If you go through a payment once in the sandbox, it remembers your preferred setting.
+      # It defaults to the *wrong* setting for the first time, so we need to have this method.
+      unless page.has_selector?("#login #email")
+        find("#loadLogin").click
+      end
     end
   end
 
-  def within_transaction_cart(&block)
-    find(".transactionDetails").click
-    within(".transctionCartDetails") { block.call }
+  module NewPaypal
+    def login_to_paypal
+      within("#loginForm") do
+        fill_in "Email", :with => "pp@spreecommerce.com"
+        fill_in "Password", :with => "thequickbrownfox"
+        click_button "Log in to PayPal"
+      end
+    end
+
+    def within_transaction_cart(&block)
+      find(".transactionDetails").click
+      within(".transctionCartDetails") { block.call }
+    end
+
+    def switch_to_paypal_login
+      #NOOP
+    end
   end
 
   def add_product_to_cart(product)
@@ -81,7 +127,9 @@ describe "PayPal", :js => true do
     click_button "Save and Continue"
     # Delivery step doesn't require any action
     click_button "Save and Continue"
-    find("#paypal_button").click
+
+    go_to_paypal
+
     switch_to_paypal_login
     login_to_paypal
     click_button "Pay Now"
@@ -106,7 +154,8 @@ describe "PayPal", :js => true do
       click_button "Save and Continue"
       # Delivery step doesn't require any action
       click_button "Save and Continue"
-      find("#paypal_button").click
+
+      go_to_paypal
 
       login_to_paypal
       click_button "Pay Now"
@@ -139,7 +188,8 @@ describe "PayPal", :js => true do
     click_button "Save and Continue"
     # Delivery step doesn't require any action
     click_button "Save and Continue"
-    find("#paypal_button").click
+
+    go_to_paypal
 
     within_transaction_cart do
       page.should have_content("$5 off")
@@ -188,7 +238,8 @@ describe "PayPal", :js => true do
       click_button "Save and Continue"
       # Delivery step doesn't require any action
       click_button "Save and Continue"
-      find("#paypal_button").click
+
+      go_to_paypal
 
       within_transaction_cart do
         page.should have_content("10% off")
@@ -224,7 +275,8 @@ describe "PayPal", :js => true do
       click_button "Save and Continue"
       # Delivery step doesn't require any action
       click_button "Save and Continue"
-      find("#paypal_button").click
+
+      go_to_paypal
 
       within_transaction_cart do
         page.should have_content('iPad')
@@ -269,7 +321,8 @@ describe "PayPal", :js => true do
       click_button "Save and Continue"
       # Delivery step doesn't require any action
       click_button "Save and Continue"
-      find("#paypal_button").click
+
+      go_to_paypal
 
       login_to_paypal
 
@@ -296,7 +349,8 @@ describe "PayPal", :js => true do
       # Delivery step doesn't require any action
       click_button "Save and Continue"
 
-      find("#paypal_button").click
+
+      go_to_paypal
 
       login_to_paypal
 
@@ -334,7 +388,7 @@ describe "PayPal", :js => true do
       # Delivery step doesn't require any action
       click_button "Save and Continue"
 
-      find("#paypal_button").click
+      go_to_paypal
 
       login_to_paypal
 
@@ -370,7 +424,7 @@ describe "PayPal", :js => true do
       # Delivery step doesn't require any action
       click_button "Save and Continue"
 
-      find("#paypal_button").click
+      go_to_paypal
 
       login_to_paypal
 
@@ -427,7 +481,7 @@ describe "PayPal", :js => true do
       # Delivery step doesn't require any action
       click_button "Save and Continue"
 
-      find("#paypal_button").click
+      go_to_paypal
 
       login_to_paypal
 
@@ -452,7 +506,7 @@ describe "PayPal", :js => true do
       # Delivery step doesn't require any action
       click_button "Save and Continue"
 
-      find("#paypal_button").click
+      go_to_paypal
 
       login_to_paypal
 
@@ -503,7 +557,9 @@ describe "PayPal", :js => true do
         click_button "Save and Continue"
         # Delivery step doesn't require any action
         click_button "Save and Continue"
-        find("#paypal_button").click
+
+        go_to_paypal
+
         switch_to_paypal_login
         login_to_paypal
         click_button("Pay Now")
