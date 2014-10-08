@@ -64,10 +64,12 @@ describe "PayPal", :js => true do
     #
     # This changes the behavior of the specs to match the layout that Paypal
     # returns to us.
-    if paypal_layout == :new_layout
-      extend NewPaypal unless respond_to?(:login_to_paypal)
-    else
-      extend OldPaypal unless respond_to?(:login_to_paypal)
+    unless respond_to?(:login_to_paypal)
+      if paypal_layout == :new_layout
+        self.class.include NewPaypal
+      else
+        self.class.include OldPaypal
+      end
     end
   end
 
