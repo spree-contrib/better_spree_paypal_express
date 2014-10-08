@@ -15,7 +15,7 @@ describe "PayPal", :js => true do
   end
 
   def paypal_layout
-    @paypal_layout ||= begin
+    $paypal_layout ||= begin
                          page.find("body.pagelogin")
                          :new_layout
                        end
@@ -23,7 +23,7 @@ describe "PayPal", :js => true do
     if page.has_content?("Internal Server Error")
       page.reload
     else
-      @paypal_layout = :old_layout
+      $paypal_layout = :old_layout
     end
   end
 
@@ -73,6 +73,11 @@ describe "PayPal", :js => true do
 
   module OldPaypal
     def login_to_paypal
+        # If you go through a payment once in the sandbox, it remembers your preferred setting.
+        # It defaults to the *wrong* setting for the first time, so we need to have this method.
+        unless page.has_selector?("#login_email")
+          find("#loadLogin").click
+        end
         fill_in "login_email", :with => "pp@spreecommerce.com"
         fill_in "login_password", :with => "thequickbrownfox"
         click_button "Log In"
@@ -82,12 +87,12 @@ describe "PayPal", :js => true do
       within("#miniCart") { block.call }
     end
 
-    def switch_to_paypal_login
-      # If you go through a payment once in the sandbox, it remembers your preferred setting.
-      # It defaults to the *wrong* setting for the first time, so we need to have this method.
-      unless page.has_selector?("#login #email")
-        find("#loadLogin").click
-      end
+    def click_pay_now
+      find("#continue_abovefold").click
+    end
+
+    def ship_to_heading
+      "Shipping address"
     end
   end
 
@@ -105,8 +110,12 @@ describe "PayPal", :js => true do
       within(".transctionCartDetails") { block.call }
     end
 
-    def switch_to_paypal_login
-      #NOOP
+    def click_pay_now
+      click_button "Pay Now"
+    end
+
+    def ship_to_heading
+      "Ship to"
     end
   end
 
@@ -127,12 +136,9 @@ describe "PayPal", :js => true do
     click_button "Save and Continue"
     # Delivery step doesn't require any action
     click_button "Save and Continue"
-
     go_to_paypal
-
-    switch_to_paypal_login
     login_to_paypal
-    click_button "Pay Now"
+    click_pay_now
     page.should have_content("Your order has been processed successfully")
 
     Spree::Payment.last.source.transaction_id.should_not be_blank
@@ -158,8 +164,7 @@ describe "PayPal", :js => true do
       go_to_paypal
 
       login_to_paypal
-      click_button "Pay Now"
-
+      click_pay_now
       page.should have_selector '[data-hook=order-bill-address] .fn', text: 'Test User'
       page.should have_selector '[data-hook=order-bill-address] .adr', text: '1 User Lane'
       page.should have_selector '[data-hook=order-bill-address] .adr', text: 'Adamsville AL 35005'
@@ -203,7 +208,7 @@ describe "PayPal", :js => true do
       page.should have_content("$10 on")
     end
 
-    click_button "Pay Now"
+    click_pay_now
 
     within("[data-hook=order_details_adjustments]") do
       page.should have_content("$5 off")
@@ -246,7 +251,7 @@ describe "PayPal", :js => true do
       end
 
       login_to_paypal
-      click_button "Pay Now"
+      click_pay_now
 
       within("[data-hook=order_details_price_adjustments]") do
         page.should have_content("10% off")
@@ -290,7 +295,7 @@ describe "PayPal", :js => true do
         page.should_not have_content('iPod')
       end
 
-      click_button "Pay Now"
+      click_pay_now
 
       within("#line-items") do
         page.should have_content('iPad')
@@ -326,7 +331,7 @@ describe "PayPal", :js => true do
 
       login_to_paypal
 
-      click_button "Pay Now"
+      click_pay_now
 
       within("[data-hook=order_details_adjustments]") do
         page.should have_content('FREE iPad ZOMG!')
@@ -354,11 +359,9 @@ describe "PayPal", :js => true do
 
       login_to_paypal
 
-      within("#shippingAddress") do
-        page.should have_content("Ship to")
-      end
+      page.should have_content(ship_to_heading)
 
-      click_button "Pay Now"
+      click_pay_now
 
       page.should have_content("Your order has been processed successfully")
     end
@@ -392,9 +395,9 @@ describe "PayPal", :js => true do
 
       login_to_paypal
 
-      page.should have_no_content("Ship To")
+      page.should have_no_content(ship_to_heading)
 
-      click_button "Pay Now"
+      click_pay_now
 
       page.should have_content("Your order has been processed successfully")
     end
@@ -428,9 +431,9 @@ describe "PayPal", :js => true do
 
       login_to_paypal
 
-      page.should have_no_content("Ship To")
+      page.should have_no_content(ship_to_heading)
 
-      click_button "Pay Now"
+      click_pay_now
 
       page.should have_content("Your order has been processed successfully")
 
@@ -485,10 +488,9 @@ describe "PayPal", :js => true do
 
       login_to_paypal
 
-      within("#shippingAddress") do
-        page.should have_content("2 User Lane")
-      end
-      click_button "Pay Now"
+      page.should have_content("2 User Lane")
+
+      click_pay_now
 
       page.should have_content("Your order has been processed successfully")
     end
@@ -510,11 +512,9 @@ describe "PayPal", :js => true do
 
       login_to_paypal
 
-      within("#shippingAddress") do
-        page.should have_content("1 User Lane")
-      end
+      page.should have_content("1 User Lane")
 
-      click_button "Pay Now"
+      click_pay_now
 
       page.should have_content("Your order has been processed successfully")
     end
@@ -559,10 +559,8 @@ describe "PayPal", :js => true do
         click_button "Save and Continue"
 
         go_to_paypal
-
-        switch_to_paypal_login
         login_to_paypal
-        click_button("Pay Now")
+        click_pay_now
         page.should have_content("Your order has been processed successfully")
 
         visit '/admin'
