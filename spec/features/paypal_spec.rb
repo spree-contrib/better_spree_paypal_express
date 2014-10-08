@@ -20,8 +20,12 @@ describe "PayPal", :js => true do
                          :new_layout
                        end
   rescue Capybara::ElementNotFound
+    retries ||= 0
     if page.has_content?("Internal Server Error")
+      sleep(1)
       page.reload
+      retry if retries < 3
+      retries += 1
     else
       $paypal_layout = :old_layout
     end
@@ -96,6 +100,8 @@ describe "PayPal", :js => true do
     def ship_to_heading
       "Shipping address"
     end
+
+
   end
 
   module NewPaypal
