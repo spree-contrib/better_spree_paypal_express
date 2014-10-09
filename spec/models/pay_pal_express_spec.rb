@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe Spree::Gateway::PayPalExpress do
-  let(:gateway) { Spree::Gateway::PayPalExpress.create!(name: "PayPalExpress", :environment => Rails.env) }
+  let(:gateway) { Spree::Gateway::PayPalExpress.create!(name: "PayPalExpress", :environment => Rails.env, preferred_req_confirmed_address: '0') }
 
   context "payment purchase" do
     let(:payment) do
