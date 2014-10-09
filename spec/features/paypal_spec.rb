@@ -16,18 +16,18 @@ describe "PayPal", :js => true do
 
   def paypal_layout
     $paypal_layout ||= begin
-                         page.find("body.pagelogin")
+                         page.find("body.pagelogin", wait: 2)
                          :new_layout
                        end
   rescue Capybara::ElementNotFound
     retries ||= 0
-    if page.has_content?("Internal Server Error")
+    if page.find("body.xptSandbox")
+      $paypal_layout = :old_layout
+    else
       sleep(1)
       page.reload
-      retry if retries < 3
       retries += 1
-    else
-      $paypal_layout = :old_layout
+      retry if retries < 3
     end
   end
 
