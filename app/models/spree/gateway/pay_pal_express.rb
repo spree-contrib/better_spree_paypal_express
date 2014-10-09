@@ -21,7 +21,7 @@ module Spree
     # 0 - Do not override the address stored at PayPal
     # 1 - Override the address stored at Paypal
     # By default, the shipping address is not overriden on Paypal's site
-    preference :address_override, :string
+    preference :address_override, :string, default: '0'
 
     # Whether to require a confirmed address
     # 0 - Do not require a confirmed address
@@ -29,7 +29,7 @@ module Spree
     #
     # Paypal recommends that you do not override the address if you are
     # requiring a confirmed address for this order.
-    preference :req_confirmed_address, :string
+    preference :req_confirmed_address, :string, default: '0'
 
     def supports?(source)
       true
