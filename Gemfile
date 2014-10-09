@@ -4,6 +4,7 @@ gem 'spree', github: 'godaddy/spree', branch: '2-2-nemo-stable'
 gem 'spree_auth_devise', github: 'spree/spree_auth_devise', :branch => '2-2-stable'
 
 group :test do
+  gem 'rails', '4.0.9' #Temporary version lock to 4.0.9 to avoid bad rails version.
   gem 'rspec-rails', '~> 2.0'
   gem 'simplecov-rcov'
   gem 'yarjuf'
