@@ -18,6 +18,36 @@ describe "PayPal", :js => true do
     FactoryGirl.create(:shipping_method)
   end
 
+  def fill_in_billing
+    within("#billing") do
+      fill_in "First Name", :with => "Test"
+      fill_in "Last Name", :with => "User"
+      fill_in "Street Address", :with => "1 User Lane"
+      # City, State and ZIP must all match for PayPal to be happy
+      fill_in "City", :with => "Adamsville"
+      select "United States of America", :from => "order_bill_address_attributes_country_id"
+      select "Alabama", :from => "order_bill_address_attributes_state_id"
+      fill_in "Zip", :with => "35005"
+      fill_in "Phone", :with => "555-123-4567"
+    end
+  end
+
+  def fill_in_shipping
+    uncheck("order[use_billing]")
+    within("#shipping") do
+      fill_in "First Name", :with => "Test"
+      fill_in "Last Name", :with => "User"
+      fill_in "Street Address", :with => "2 User Lane"
+      # City, State and ZIP must all match for PayPal to be happy
+      fill_in "City", :with => "Adamsville"
+      select "United States of America", :from => "order_ship_address_attributes_country_id"
+      select "Alabama", :from => "order_ship_address_attributes_state_id"
+      fill_in "Zip", :with => "35005"
+      fill_in "Phone", :with => "555-123-4567"
+    end
+  end
+
+
   def add_product_to_cart(product)
     visit spree.root_path
     click_link product
