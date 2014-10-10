@@ -1,19 +1,19 @@
 module PaypalSupport
   def paypal_layout
-    $paypal_layout ||= begin
+    @paypal_layout ||= begin
                          page.find("body.pagelogin", wait: 3)
                          :new_layout
                        end
   rescue Capybara::ElementNotFound
     retries ||= 0
     if page.has_css?("body.xptSandbox")
-      $paypal_layout = :old_layout
+      @paypal_layout = :old_layout
     elsif page.has_content?("Internal Server Error")
-      page.reload
+      visit current_path
       retry
     else
       sleep(1)
-      page.reload
+      visit current_path
       retries += 1
       retry if retries < 5
       raise "Could not determine the paypal layout"
