@@ -33,8 +33,17 @@ require 'sass'
 
 require 'capybara/poltergeist'
 
+Capybara.register_driver :poltergeist do |app|
+    Capybara::Poltergeist::Driver.new(
+      app,
+      :phantomjs_options => ['--debug=no', '--ssl-protocol=ANY'],
+      :timeout => 30,
+      :debug => false
+    )
+end
+
 Capybara.javascript_driver = :poltergeist
-Capybara.default_wait_time = 15
+Capybara.default_wait_time = 30
 
 Dir[File.join(File.dirname(__FILE__), 'support/**/*.rb')].each { |f| require f }
 
@@ -49,6 +58,7 @@ RSpec.configure do |config|
   config.include FactoryGirl::Syntax::Methods
   config.include Spree::TestingSupport::UrlHelpers
   config.include Spree::TestingSupport::AuthorizationHelpers::Controller
+  config.include PaypalSupport, type: :feature
 
   config.mock_with :rspec
   config.color = true

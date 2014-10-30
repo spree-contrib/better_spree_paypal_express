@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe Spree::Gateway::PayPalExpress do
-  let(:gateway) { Spree::Gateway::PayPalExpress.create!(name: "PayPalExpress", :environment => Rails.env) }
+  let(:gateway) { Spree::Gateway::PayPalExpress.create!(name: "PayPalExpress", :environment => Rails.env, preferred_req_confirmed_address: '0') }
 
   context "payment purchase" do
     let(:payment) do
@@ -22,12 +22,12 @@ describe Spree::Gateway::PayPalExpress do
       }).and_return(pp_details_request = double)
 
       pp_details_response = double(:get_express_checkout_details_response_details =>
-        double(:PaymentDetails => {
-          :OrderTotal => {
-            :currencyID => "USD",
-            :value => "10.00"
-          }
-        }))
+                                   double(:PaymentDetails => {
+                                     :OrderTotal => {
+                                       :currencyID => "USD",
+                                       :value => "10.00"
+                                     },
+                                   }))
 
       provider.should_receive(:get_express_checkout_details).
         with(pp_details_request).
@@ -53,7 +53,7 @@ describe Spree::Gateway::PayPalExpress do
 
     # Test for #4
     it "fails" do
-      response = double('pp_response', :success? => false, 
+      response = double('pp_response', :success? => false,
                           :errors => [double('pp_response_error', :long_message => "An error goes here.")])
       provider.should_receive(:do_express_checkout_payment).and_return(response)
       lambda { payment.purchase! }.should raise_error(Spree::Core::GatewayError, "An error goes here.")
