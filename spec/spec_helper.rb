@@ -34,11 +34,15 @@ require 'sass'
 require 'capybara/poltergeist'
 
 Capybara.register_driver :poltergeist do |app|
-    Capybara::Poltergeist::Driver.new(app,
-                                         :phantomjs_options => ['--debug=no', '--ignore-ssl-errors=yes', '--ssl-protocol=TLSv1'], :debug => false)
+    Capybara::Poltergeist::Driver.new(
+      app,
+      :phantomjs_options => ['--debug=no', '--ssl-protocol=ANY'],
+      :timeout => 30,
+      :debug => false
+    )
 end
 Capybara.javascript_driver = :poltergeist
-Capybara.default_wait_time = 15
+Capybara.default_wait_time = 30
 
 Dir[File.join(File.dirname(__FILE__), 'support/**/*.rb')].each { |f| require f }
 
