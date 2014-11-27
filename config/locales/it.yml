@@ -1,0 +1,21 @@
+---
+it:
+  spree:
+    paypal:
+      already_refunded: "Questo pagamento è già stato rimborsato e non sono possibili altre azioni."
+      no_payment_via_admin_backend: "Al momento non è possibile pagare account PayPal dall'interfaccia admin."
+      transaction: "Transazione PayPal"
+      payer_id: "ID Payer"
+      transaction_id: "ID Transazione"
+      token: "Token"
+      refund: "Rimborso"
+      refund_amount: "Importo"
+      original_amount: "Importo originale: %{amount}"
+      refund_successful: "Rimborso PayPal completato"
+      refund_unsuccessful: "Rimborso PayPal non completato"
+      actions:
+        refund: "Rimborso"
+      flash:
+        cancel: "Non vuoi usare PayPal? Nessun problema."
+        connection_failed: "Impossibile connettersi a PayPal."
+        generic_error: "Errore PayPal. %{reasons}"
