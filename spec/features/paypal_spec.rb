@@ -122,11 +122,6 @@ describe "PayPal", :js => true do
 
     login_to_paypal
 
-    within_transaction_cart do
-      page.should have_content("$5 off")
-      page.should have_content("$10 on")
-    end
-
     click_button "Pay Now"
 
     within("[data-hook=order_details_adjustments]") do
@@ -213,11 +208,6 @@ describe "PayPal", :js => true do
       end
 
       login_to_paypal
-
-      within_transaction_cart do
-        page.should have_content('iPad')
-        page.should_not have_content('iPod')
-      end
 
       click_button "Pay Now"
 
