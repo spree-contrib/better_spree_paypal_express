@@ -99,7 +99,7 @@ describe "PayPal", :js => true do
       page.should have_selector '[data-hook=order-bill-address] .adr', text: '1 User Lane'
       page.should have_selector '[data-hook=order-bill-address] .adr', text: 'Adamsville AL 35005'
       page.should have_selector '[data-hook=order-bill-address] .adr', text: 'United States'
-      page.should have_selector '[data-hook=order-bill-address] .tel', text: '555-123-4567'
+      page.should have_selector '[data-hook=order-bill-address] .tel', text: '555-AME-RICA'
     end
   end
 
