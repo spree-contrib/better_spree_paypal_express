@@ -1,5 +1,6 @@
 describe "PayPal", :js => true do
   let!(:product) { FactoryGirl.create(:product, :name => 'iPad') }
+
   before do
     @gateway = Spree::Gateway::PayPalExpress.create!({
       :preferred_login => "pp_api1.ryanbigg.com",
@@ -10,6 +11,7 @@ describe "PayPal", :js => true do
     })
     FactoryGirl.create(:shipping_method)
   end
+
   def fill_in_billing
     within("#billing") do
       fill_in "First Name", :with => "Test"
@@ -21,14 +23,6 @@ describe "PayPal", :js => true do
       select "Alabama", :from => "order_bill_address_attributes_state_id"
       fill_in "Zip", :with => "35005"
       fill_in "Phone", :with => "555-123-4567"
-    end
-  end
-
-  def switch_to_paypal_login
-    # If you go through a payment once in the sandbox, it remembers your preferred setting.
-    # It defaults to the *wrong* setting for the first time, so we need to have this method.
-    unless page.has_selector?("#login #email")
-      find("#loadLogin").click
     end
   end
 
@@ -59,7 +53,6 @@ describe "PayPal", :js => true do
     # Delivery step doesn't require any action
     click_button "Save and Continue"
     find("#paypal_button").click
-    switch_to_paypal_login
     login_to_paypal
     click_button "Pay Now"
     page.should have_content("Your order has been processed successfully")
@@ -315,7 +308,6 @@ describe "PayPal", :js => true do
         # Delivery step doesn't require any action
         click_button "Save and Continue"
         find("#paypal_button").click
-        switch_to_paypal_login
         login_to_paypal
         click_button("Pay Now")
         page.should have_content("Your order has been processed successfully")
