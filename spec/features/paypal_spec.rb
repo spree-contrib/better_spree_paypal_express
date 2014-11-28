@@ -107,8 +107,8 @@ describe "PayPal", :js => true do
     click_button 'Add To Cart'
     # TODO: Is there a better way to find this current order?
     order = Spree::Order.last
-    order.adjustments.create!(:amount => -5, :label => "$5 off")
-    order.adjustments.create!(:amount => 10, :label => "$10 on")
+    order.adjustments.create!(:amount => -5, :label => "$5 off", :order => order)
+    order.adjustments.create!(:amount => 10, :label => "$10 on", :order => order)
     visit '/cart'
     within("#cart_adjustments") do
       page.should have_content("$5 off")
@@ -253,7 +253,9 @@ describe "PayPal", :js => true do
       click_button 'Add To Cart'
       # TODO: Is there a better way to find this current order?
       order = Spree::Order.last
-      order.adjustments.create!(:amount => -order.line_items.last.price, :label => "FREE iPad ZOMG!")
+      order.adjustments.create!(:amount => -order.line_items.last.price,
+                                :label => "FREE iPad ZOMG!",
+                                :order => order)
       click_button 'Checkout'
       within("#guest_checkout") do
         fill_in "Email", :with => "test@example.com"
