@@ -315,10 +315,10 @@ describe "PayPal", :js => true do
       end
 
       it "can refund payments fully" do
+        payment = Spree::Payment.last
         click_button "Refund"
         page.should have_content("PayPal refund successful")
 
-        payment = Spree::Payment.last
         source = payment.source
         source.refund_transaction_id.should_not be_blank
         source.refunded_at.should_not be_blank
