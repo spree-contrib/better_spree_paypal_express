@@ -275,6 +275,48 @@ describe "PayPal", :js => true do
     end
   end
 
+  context "can process an order with Tax included prices" do
+    let(:tax_rate) { create(:tax_rate, name: 'VAT Tax', amount: 0.1,
+                            zone: Spree::Zone.first, included_in_price: true) }
+    let(:tax_category) { create(:tax_category, tax_rates: [tax_rate]) }
+    let(:product3) { FactoryGirl.create(:product, name: 'EU Charger', tax_category: tax_category) }
+    let(:tax_string) { "VAT Tax 10.0%" }
+
+    # Regression test for #129
+    context "on countries where the Tax is applied" do
+
+      before do
+        Spree::Zone.first.update_attribute(:default_tax, true)
+      end
+
+      specify do
+        add_to_cart(product3)
+        visit '/cart'
+
+        within("#cart_adjustments") do
+          page.should have_content("#{tax_string} (Included in Price)")
+        end
+
+        click_button 'Checkout'
+        fill_in_guest
+        fill_in_billing
+        click_button "Save and Continue"
+        click_button "Save and Continue"
+        find("#paypal_button").click
+
+        within_transaction_cart do
+          # included taxes should not go on paypal
+          page.should_not have_content(tax_string)
+        end
+
+        login_to_paypal
+        click_button "Pay Now"
+        page.should have_content("Your order has been processed successfully")
+      end
+    end
+
+  end
+
   context "as an admin" do
     stub_authorization!
 
