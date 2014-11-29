@@ -44,15 +44,23 @@ describe "PayPal", :js => true do
     within(".transctionCartDetails") { block.call }
   end
 
-  it "pays for an order successfully" do
+  def add_to_cart(product)
     visit spree.root_path
-    click_link 'iPad'
+    click_link product.name
     click_button 'Add To Cart'
-    click_button 'Checkout'
+  end
+
+  def fill_in_guest
     within("#guest_checkout") do
       fill_in "Email", :with => "test@example.com"
       click_button 'Continue'
     end
+  end
+
+  it "pays for an order successfully" do
+    add_to_cart(product)
+    click_button 'Checkout'
+    fill_in_guest
     fill_in_billing
     click_button "Save and Continue"
     # Delivery step doesn't require any action
@@ -71,9 +79,7 @@ describe "PayPal", :js => true do
     end
 
     it "passes user details to PayPal" do
-      visit spree.root_path
-      click_link 'iPad'
-      click_button 'Add To Cart'
+      add_to_cart(product)
       click_button 'Checkout'
       within("#guest_checkout") do
         fill_in "Email", :with => "test@example.com"
@@ -97,9 +103,7 @@ describe "PayPal", :js => true do
   end
 
   it "includes adjustments in PayPal summary" do
-    visit spree.root_path
-    click_link 'iPad'
-    click_button 'Add To Cart'
+    add_to_cart(product)
     # TODO: Is there a better way to find this current order?
     order = Spree::Order.last
     order.adjustments.create!(:amount => -5, :label => "$5 off", :order => order)
@@ -110,10 +114,7 @@ describe "PayPal", :js => true do
       page.should have_content("$10 on")
     end
     click_button 'Checkout'
-    within("#guest_checkout") do
-      fill_in "Email", :with => "test@example.com"
-      click_button 'Continue'
-    end
+    fill_in_guest
     fill_in_billing
     click_button "Save and Continue"
     # Delivery step doesn't require any action
@@ -145,9 +146,7 @@ describe "PayPal", :js => true do
 
     it "includes line item adjustments in PayPal summary" do
 
-      visit spree.root_path
-      click_link 'iPad'
-      click_button 'Add To Cart'
+      add_to_cart(product)
       # TODO: Is there a better way to find this current order?
       order = Spree::Order.last
       order.line_item_adjustments.count.should == 1
@@ -185,13 +184,8 @@ describe "PayPal", :js => true do
     let!(:product2) { FactoryGirl.create(:product, :name => 'iPod') }
 
     specify do
-      visit spree.root_path
-      click_link 'iPad'
-      click_button 'Add To Cart'
-
-      visit spree.root_path
-      click_link 'iPod'
-      click_button 'Add To Cart'
+      add_to_cart(product)
+      add_to_cart(product2)
 
       # TODO: Is there a better way to find this current order?
       order = Spree::Order.last
@@ -232,9 +226,7 @@ describe "PayPal", :js => true do
     end
 
     specify do
-      visit spree.root_path
-      click_link 'iPad'
-      click_button 'Add To Cart'
+      add_to_cart(product)
       # TODO: Is there a better way to find this current order?
       order = Spree::Order.last
       order.adjustments.create!(:amount => -order.line_items.last.price,
@@ -268,9 +260,7 @@ describe "PayPal", :js => true do
     end
 
     specify do
-      visit spree.root_path
-      click_link 'iPad'
-      click_button 'Add To Cart'
+      add_to_cart(product)
       click_button 'Checkout'
       within("#guest_checkout") do
         fill_in "Email", :with => "test@example.com"
