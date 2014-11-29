@@ -1,5 +1,7 @@
 # Spree PayPal Express
 
+[![Build Status](https://travis-ci.org/spree-contrib/better_spree_paypal_express.svg)](https://travis-ci.org/spree-contrib/better_spree_paypal_express)
+
 This is a "re-do" of the official [spree_paypal_express][4] extension. The old extension is extremely hard to maintain and complex.
 
 Behind-the-scenes, this extension uses [PayPal's Merchant Ruby SDK](https://github.com/paypal/merchant-sdk-ruby).
