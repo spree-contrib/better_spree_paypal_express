@@ -1,5 +1,7 @@
 # Spree PayPal Express
 
+[![Build Status](https://travis-ci.org/spree-contrib/better_spree_paypal_express.svg)](https://travis-ci.org/spree-contrib/better_spree_paypal_express)
+
 This is a "re-do" of the official [spree_paypal_express][4] extension. The old extension is extremely hard to maintain and complex.
 
 Behind-the-scenes, this extension uses [PayPal's Merchant Ruby SDK](https://github.com/paypal/merchant-sdk-ruby).
@@ -34,7 +36,7 @@ You will also need a "Personal" account to test the transactions on your site. C
 
 #### Spree Setup
 
-In Spree, go to the admin backend, click "Configuration" and then "Payment Methods" and create a new payment method. Select "Spree::Gateway::PayPalExpress" as the provider, and click "Create". Enter the email address, password and signature from the "API Credentials" tab for the **Business** account on PayPal. 
+In Spree, go to the admin backend, click "Configuration" and then "Payment Methods" and create a new payment method. Select "Spree::Gateway::PayPalExpress" as the provider, and click "Create". Enter the email address, password and signature from the "API Credentials" tab for the **Business** account on PayPal.
 
 ### Production setup
 
@@ -56,7 +58,7 @@ This Spree extension supports *some* of those. If your favourite is not here, th
 
 ### Solution Type
 
-Determines whether or not a user needs a PayPal account to check out. 
+Determines whether or not a user needs a PayPal account to check out.
 
 ```ruby
 payment_method.preferred_solution_type = "Mark"
@@ -64,7 +66,7 @@ payment_method.preferred_solution_type = "Mark"
 payment_method.preferred_solution_type = "Sole"
 ```
 
-"Mark" if you do want users to have a paypal account, "Sole" otherwise. 
+"Mark" if you do want users to have a paypal account, "Sole" otherwise.
 
 ### Landing Page
 
