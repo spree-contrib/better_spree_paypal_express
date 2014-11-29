@@ -275,18 +275,18 @@ describe "PayPal", :js => true do
     end
   end
 
-  context "can process an order with Tax included prices" do
+  context "can process an order with VAT included prices" do
     let(:tax_rate) { create(:tax_rate, name: 'VAT Tax', amount: 0.1,
-                            zone: Spree::Zone.first, included_in_price: true) }
+                            zone: Spree::Zone.last, included_in_price: true) }
     let(:tax_category) { create(:tax_category, tax_rates: [tax_rate]) }
     let(:product3) { FactoryGirl.create(:product, name: 'EU Charger', tax_category: tax_category) }
-    let(:tax_string) { "VAT Tax 10.0%" }
+    let(:tax_string) { "VAT Tax 10.0% (Included in Price)" }
 
     # Regression test for #129
-    context "on countries where the Tax is applied" do
+    context "from countries where VAT is applied" do
 
       before do
-        Spree::Zone.first.update_attribute(:default_tax, true)
+        Spree::Zone.last.update_attribute(:default_tax, true)
       end
 
       specify do
@@ -294,7 +294,7 @@ describe "PayPal", :js => true do
         visit '/cart'
 
         within("#cart_adjustments") do
-          page.should have_content("#{tax_string} (Included in Price)")
+          page.should have_content(tax_string)
         end
 
         click_button 'Checkout'
@@ -311,10 +311,41 @@ describe "PayPal", :js => true do
 
         login_to_paypal
         click_button "Pay Now"
+
         page.should have_content("Your order has been processed successfully")
       end
     end
 
+    # Regression test for #17
+    context "from countries where VAT is refunded" do
+      # this is required, but we will not use this zone on this checkout
+      let!(:default_tax_zone) { create(:zone, default_tax: true) }
+
+      specify do
+        add_to_cart(product3)
+        click_button 'Checkout'
+        fill_in_guest
+        fill_in_billing
+        click_button "Save and Continue"
+
+        within("#checkout-summary") do
+          page.should have_content("Refund #{tax_string}")
+        end
+
+        click_button "Save and Continue"
+        find("#paypal_button").click
+
+        within_transaction_cart do
+          # included taxes should not reach paypal
+          page.should have_content(tax_string)
+        end
+
+        login_to_paypal
+        click_button "Pay Now"
+
+        page.should have_content("Your order has been processed successfully")
+      end
+    end
   end
 
   context "as an admin" do
