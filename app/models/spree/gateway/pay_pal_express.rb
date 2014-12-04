@@ -43,6 +43,18 @@ module Spree
       })
       pp_details_response = provider.get_express_checkout_details(pp_details_request)
 
+      # HACK: fix bug where subject email without associated paypal account fails payment (paypal returns 10002 unauthorized error)
+      # the GetExpressCheckoutDetails call returns "PaypalAccountID" in
+      # pp_details_response.get_express_checkout_details_response_details.payment_details.seller_details.pay_pal_account_id
+      # Since we only use the "subject" field, rather than specifying the specific account id, we want that
+      # value to be empty. If it's not empty (such as when GetExpressCheckoutDetails returns is), PayPal rejects transactions.
+      # PayPal is supposed to be looking into why this value is returned and hopefully fix (as of 12/4/2014).
+      # IF they get that fixed, we should be able to safely remove this line.
+      # We usually only have 1 payment, but payment_details is an array, so nil the pay_pal_account_id for all payments
+      pp_details_response.get_express_checkout_details_response_details.payment_details.each do |payment|
+        payment.seller_details.pay_pal_account_id = nil
+      end
+
       pp_request = provider.build_do_express_checkout_payment({
         :DoExpressCheckoutPaymentRequestDetails => {
           :PaymentAction => "Sale",
