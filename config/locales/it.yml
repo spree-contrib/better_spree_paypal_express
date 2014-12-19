@@ -1,0 +1,21 @@
+---
+it:
+  spree:
+    paypal:
+      already_refunded: "Questo pagamento è stato rimborsato, e non è più possibile modificarlo."
+      no_payment_via_admin_backend: "In questo momento non è possibile effettuare addebiti sugli account Paypal dal pannello di amministrazione."
+      transaction: "Transazione Paypal"
+      payer_id: "ID pagante"
+      transaction_id: "ID transazione"
+      token: "Token"
+      refund: "Rimborso"
+      refund_amount: "Totale"
+      original_amount: "Totale iniziale: %{amount}"
+      refund_successful: "Rimborso paypal effettuato con successo"
+      refund_unsuccessful: "Rimborso paypal non effettuato"
+      actions:
+        refund: "Rimborso"
+      flash:
+        cancel: "Non vuoi utilizzare Paypal? Nessun problema."
+        connection_failed: "Impossibile connettersi a Paypal."
+        generic_error: "Errore generico. %{reasons}"
