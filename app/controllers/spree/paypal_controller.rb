@@ -1,13 +1,16 @@
 module Spree
   class PaypalController < StoreController
+    ssl_allowed
+
     def express
       order = current_order || raise(ActiveRecord::RecordNotFound)
       items = order.line_items.map(&method(:line_item))
 
-      tax_adjustments = order.adjustments.tax.additional
-      shipping_adjustments = order.adjustments.shipping
+      additional_adjustments = order.all_adjustments.additional
+      tax_adjustments = additional_adjustments.tax
+      shipping_adjustments = additional_adjustments.shipping
 
-      order.adjustments.eligible.each do |adjustment|
+      additional_adjustments.eligible.each do |adjustment|
         next if (tax_adjustments + shipping_adjustments).include?(adjustment)
         items << {
           :Name => adjustment.label,
@@ -56,6 +59,7 @@ module Spree
       if order.complete?
         flash.notice = Spree.t(:order_processed_successfully)
         flash[:commerce_tracking] = "nothing special"
+        session[:order_id] = nil
         redirect_to completion_route(order)
       else
         redirect_to checkout_state_path(order.state)
@@ -91,6 +95,7 @@ module Spree
           :SolutionType => payment_method.preferred_solution.present? ? payment_method.preferred_solution : "Mark",
           :LandingPage => payment_method.preferred_landing_page.present? ? payment_method.preferred_landing_page : "Billing",
           :cppheaderimage => payment_method.preferred_logourl.present? ? payment_method.preferred_logourl : "",
+          :NoShipping => 1,
           :PaymentDetails => [payment_details(items)]
       }}
     end
@@ -104,7 +109,15 @@ module Spree
     end
 
     def payment_details items
-      item_sum = items.sum { |i| i[:Quantity] * i[:Amount][:value] }
+      # This retrieves the cost of shipping after promotions are applied
+      # For example, if shippng costs $10, and is free with a promotion, shipment_sum is now $10
+      shipment_sum = current_order.shipments.map(&:discounted_cost).sum
+
+      # This calculates the item sum based upon what is in the order total, but not for shipping
+      # or tax.  This is the easiest way to determine what the items should cost, as that
+      # functionality doesn't currently exist in Spree core
+      item_sum = current_order.total - shipment_sum - current_order.additional_tax_total
+
       if item_sum.zero?
         # Paypal does not support no items or a zero dollar ItemTotal
         # This results in the order summary being simply "Current purchase"
@@ -126,7 +139,7 @@ module Spree
           },
           :ShippingTotal => {
             :currencyID => current_order.currency,
-            :value => current_order.ship_total
+            :value => shipment_sum,
           },
           :TaxTotal => {
             :currencyID => current_order.currency,

@@ -96,6 +96,43 @@ describe "PayPal", :js => true do
     end
   end
 
+  context "line item adjustments" do
+    let(:promotion) { Spree::Promotion.create(name: "10% off") }
+    before do
+      calculator = Spree::Calculator::FlatPercentItemTotal.new(preferred_flat_percent: 10)
+      action = Spree::Promotion::Actions::CreateItemAdjustments.create(:calculator => calculator)
+      promotion.actions << action
+    end    
+
+    it "includes line item adjustments in PayPal summary" do
+
+      visit spree.root_path
+      click_link 'iPad'
+      click_button 'Add To Cart'
+      # TODO: Is there a better way to find this current order?
+      order = Spree::Order.last
+      order.line_item_adjustments.count.should == 1
+
+      visit '/cart'
+      within("#cart_adjustments") do
+        page.should have_content("10% off")
+      end
+      click_button 'Checkout'
+      within("#guest_checkout") do
+        fill_in "Email", :with => "test@example.com"
+        click_button 'Continue'
+      end
+      fill_in_billing
+      click_button "Save and Continue"
+      # Delivery step doesn't require any action
+      click_button "Save and Continue"
+      find("#paypal_button").click
+      within("#miniCart") do
+        page.should have_content("10% off")
+      end
+    end
+  end
+
   # Regression test for #10
   context "will skip $0 items" do
     let!(:product2) { FactoryGirl.create(:product, :name => 'iPod') }
