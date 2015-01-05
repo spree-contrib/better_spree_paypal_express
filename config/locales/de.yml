@@ -3,6 +3,7 @@ de:
   spree:
     paypal:
       already_refunded: "Diese Zahlung wurde zurück erstattet und kann nicht weiter bearbeitet werden."
+      no_payment_via_admin_backend: "Sie können nicht aufgeladen PayPal-Konten über das Admin-Backend zu diesem Zeitpunkt."
       transaction: "PayPal Transaktion"
       payer_id: "Zahler ID"
       transaction_id: "Transaktions ID"
