@@ -24,7 +24,7 @@
             <%= text_field_tag 'refund_amount', @payment.amount %><%= symbol %>
           <% end %>
         </div>
-        <%= button Spree.t(:refund, :scope => 'paypal'), 'icon-dollar' %>
+        <%= button Spree.t(:refund, scope: 'paypal'), 'money' %>
       </fieldset>
     </div>
   </div>
