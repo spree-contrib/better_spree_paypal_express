@@ -11,3 +11,5 @@ spec/dummy
 rspec.failures
 .rvmrc
 .idea
+.ruby-version
+.ruby-gemset
