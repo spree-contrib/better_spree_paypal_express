@@ -10,3 +10,5 @@ pkg
 spec/dummy
 .rvmrc
 .idea
+.ruby-version
+.ruby-gemset
