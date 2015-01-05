@@ -1,5 +1,3 @@
-require 'spec_helper'
-
 describe "PayPal", :js => true do
   let!(:product) { FactoryGirl.create(:product, :name => 'iPad') }
   before do
