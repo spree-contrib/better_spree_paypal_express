@@ -11,6 +11,7 @@ en:
       token: "Token"
       refund: "Refund"
       refund_amount: "Amount"
+      order_not_completed: "We couldn't process your payment. Please try again or contact us if you continue to experience issues."
       original_amount: "Original amount: %{amount}"
       refund_successful: "PayPal refund successful"
       refund_unsuccessful: "PayPal refund unsuccessful"

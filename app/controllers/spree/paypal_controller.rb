@@ -62,6 +62,7 @@ module Spree
         session[:order_id] = nil
         redirect_to completion_route(order)
       else
+        flash[:error] = Spree.t("paypal.order_not_completed")
         redirect_to checkout_state_path(order.state)
       end
     end
