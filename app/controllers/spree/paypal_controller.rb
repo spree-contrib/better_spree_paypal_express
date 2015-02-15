@@ -1,6 +1,5 @@
 module Spree
   class PaypalController < StoreController
-    ssl_allowed
 
     def express
       order = current_order || raise(ActiveRecord::RecordNotFound)
