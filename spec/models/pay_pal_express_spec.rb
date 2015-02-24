@@ -1,5 +1,5 @@
 describe Spree::Gateway::PayPalExpress do
-  let(:gateway) { Spree::Gateway::PayPalExpress.create!(name: "PayPalExpress", :environment => Rails.env) }
+  let(:gateway) { Spree::Gateway::PayPalExpress.create!(name: "PayPalExpress") }
 
   context "payment purchase" do
     let(:payment) do

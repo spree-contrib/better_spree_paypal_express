@@ -6,8 +6,7 @@ describe "PayPal", :js => true do
       :preferred_password => "1383066713",
       :preferred_signature => "An5ns1Kso7MWUdW4ErQKJJJ4qi4-Ar-LpzhMJL0cu8TjM8Z2e1ykVg5B",
       :name => "PayPal",
-      :active => true,
-      :environment => Rails.env
+      :active => true
     })
     FactoryGirl.create(:shipping_method)
   end
