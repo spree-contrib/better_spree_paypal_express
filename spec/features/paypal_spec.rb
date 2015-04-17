@@ -27,12 +27,10 @@ describe "PayPal", :js => true do
   end
 
   def login_to_paypal
-    if page.has_selector?("#loginForm")
-      within("#loginForm") do
-        fill_in "Email", :with => "pp@spreecommerce.com"
-        fill_in "Password", :with => "thequickbrownfox"
-        click_button "Log in to PayPal"
-      end
+    within("form[name='loginForm']") do
+      fill_in "username", with: "pp@spreecommerce.com"
+      fill_in "password", with: "thequickbrownfox"
+      find(".loginBtn").click
     end
   end
 
