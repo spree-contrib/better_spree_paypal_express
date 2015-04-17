@@ -9,11 +9,3 @@ before_script:
   - bundle exec rake test_app
 script:
   - bundle exec rake rspec-rerun:spec
-notifications:
-  email:
-    - ryan@spreecommerce.com
-rvm:
-  - 2.1.5
-branches:
-  only:
-    - master
