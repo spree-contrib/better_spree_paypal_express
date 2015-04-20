@@ -1,6 +1,6 @@
 # Spree PayPal Express
 
-[![Build Status](https://travis-ci.org/spree-contrib/better_spree_paypal_express.svg)](https://travis-ci.org/spree-contrib/better_spree_paypal_express)
+[![Build Status](https://travis-ci.org/spree-contrib/better_spree_paypal_express.svg?branch=2-3-stable)](https://travis-ci.org/spree-contrib/better_spree_paypal_express)
 
 This is a "re-do" of the official [spree_paypal_express][4] extension. The old extension is extremely hard to maintain and complex.
 
