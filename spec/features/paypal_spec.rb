@@ -1,5 +1,6 @@
 describe "PayPal", :js => true do
   let!(:product) { FactoryGirl.create(:product, :name => 'iPad') }
+
   before do
     @gateway = Spree::Gateway::PayPalExpress.create!({
       :preferred_login => "pp_api1.ryanbigg.com",
@@ -11,6 +12,7 @@ describe "PayPal", :js => true do
     })
     FactoryGirl.create(:shipping_method)
   end
+
   def fill_in_billing
     within("#billing") do
       fill_in "First Name", :with => "Test"
@@ -25,19 +27,13 @@ describe "PayPal", :js => true do
     end
   end
 
-  def switch_to_paypal_login
-    # If you go through a payment once in the sandbox, it remembers your preferred setting.
-    # It defaults to the *wrong* setting for the first time, so we need to have this method.
-    unless page.has_selector?("#login #email")
-      find("#loadLogin").click
-    end
-  end
-
   def login_to_paypal
-    within("#loginForm") do
-      fill_in "Email", :with => "pp@spreecommerce.com"
-      fill_in "Password", :with => "thequickbrownfox"
-      click_button "Log in to PayPal"
+    if page.has_selector?("#loginForm")
+      within("#loginForm") do
+        fill_in "Email", :with => "pp@spreecommerce.com"
+        fill_in "Password", :with => "thequickbrownfox"
+        click_button "Log in to PayPal"
+      end
     end
   end
 
@@ -46,21 +42,28 @@ describe "PayPal", :js => true do
     within(".transctionCartDetails") { block.call }
   end
 
-  it "pays for an order successfully" do
+  def add_to_cart(product)
     visit spree.root_path
-    click_link 'iPad'
+    click_link product.name
     click_button 'Add To Cart'
-    click_button 'Checkout'
+  end
+
+  def fill_in_guest
     within("#guest_checkout") do
       fill_in "Email", :with => "test@example.com"
       click_button 'Continue'
     end
+  end
+
+  it "pays for an order successfully" do
+    add_to_cart(product)
+    click_button 'Checkout'
+    fill_in_guest
     fill_in_billing
     click_button "Save and Continue"
     # Delivery step doesn't require any action
     click_button "Save and Continue"
     find("#paypal_button").click
-    switch_to_paypal_login
     login_to_paypal
     click_button "Pay Now"
     page.should have_content("Your order has been processed successfully")
@@ -74,9 +77,7 @@ describe "PayPal", :js => true do
     end
 
     it "passes user details to PayPal" do
-      visit spree.root_path
-      click_link 'iPad'
-      click_button 'Add To Cart'
+      add_to_cart(product)
       click_button 'Checkout'
       within("#guest_checkout") do
         fill_in "Email", :with => "test@example.com"
@@ -100,23 +101,18 @@ describe "PayPal", :js => true do
   end
 
   it "includes adjustments in PayPal summary" do
-    visit spree.root_path
-    click_link 'iPad'
-    click_button 'Add To Cart'
+    add_to_cart(product)
     # TODO: Is there a better way to find this current order?
     order = Spree::Order.last
-    order.adjustments.create!(:amount => -5, :label => "$5 off")
-    order.adjustments.create!(:amount => 10, :label => "$10 on")
+    order.adjustments.create!(:amount => -5, :label => "$5 off", :order => order)
+    order.adjustments.create!(:amount => 10, :label => "$10 on", :order => order)
     visit '/cart'
     within("#cart_adjustments") do
       page.should have_content("$5 off")
       page.should have_content("$10 on")
     end
     click_button 'Checkout'
-    within("#guest_checkout") do
-      fill_in "Email", :with => "test@example.com"
-      click_button 'Continue'
-    end
+    fill_in_guest
     fill_in_billing
     click_button "Save and Continue"
     # Delivery step doesn't require any action
@@ -129,11 +125,6 @@ describe "PayPal", :js => true do
     end
 
     login_to_paypal
-
-    within_transaction_cart do
-      page.should have_content("$5 off")
-      page.should have_content("$10 on")
-    end
 
     click_button "Pay Now"
 
@@ -153,9 +144,7 @@ describe "PayPal", :js => true do
 
     it "includes line item adjustments in PayPal summary" do
 
-      visit spree.root_path
-      click_link 'iPad'
-      click_button 'Add To Cart'
+      add_to_cart(product)
       # TODO: Is there a better way to find this current order?
       order = Spree::Order.last
       order.line_item_adjustments.count.should == 1
@@ -193,13 +182,8 @@ describe "PayPal", :js => true do
     let!(:product2) { FactoryGirl.create(:product, :name => 'iPod') }
 
     specify do
-      visit spree.root_path
-      click_link 'iPad'
-      click_button 'Add To Cart'
-
-      visit spree.root_path
-      click_link 'iPod'
-      click_button 'Add To Cart'
+      add_to_cart(product)
+      add_to_cart(product2)
 
       # TODO: Is there a better way to find this current order?
       order = Spree::Order.last
@@ -222,11 +206,6 @@ describe "PayPal", :js => true do
 
       login_to_paypal
 
-      within_transaction_cart do
-        page.should have_content('iPad')
-        page.should_not have_content('iPod')
-      end
-
       click_button "Pay Now"
 
       within("#line-items") do
@@ -245,12 +224,12 @@ describe "PayPal", :js => true do
     end
 
     specify do
-      visit spree.root_path
-      click_link 'iPad'
-      click_button 'Add To Cart'
+      add_to_cart(product)
       # TODO: Is there a better way to find this current order?
       order = Spree::Order.last
-      order.adjustments.create!(:amount => -order.line_items.last.price, :label => "FREE iPad ZOMG!")
+      order.adjustments.create!(:amount => -order.line_items.last.price,
+                                :label => "FREE iPad ZOMG!",
+                                :order => order)
       click_button 'Checkout'
       within("#guest_checkout") do
         fill_in "Email", :with => "test@example.com"
@@ -279,9 +258,7 @@ describe "PayPal", :js => true do
     end
 
     specify do
-      visit spree.root_path
-      click_link 'iPad'
-      click_button 'Add To Cart'
+      add_to_cart(product)
       click_button 'Checkout'
       within("#guest_checkout") do
         fill_in "Email", :with => "test@example.com"
@@ -293,6 +270,79 @@ describe "PayPal", :js => true do
       click_button "Save and Continue"
       find("#paypal_button").click
       page.should have_content("PayPal failed. Security header is not valid")
+    end
+  end
+
+  context "can process an order with VAT included prices" do
+    let(:tax_rate) { create(:tax_rate, name: 'VAT Tax', amount: 0.1,
+                            zone: Spree::Zone.last, included_in_price: true) }
+    let(:tax_category) { create(:tax_category, tax_rates: [tax_rate]) }
+    let(:product3) { FactoryGirl.create(:product, name: 'EU Charger', tax_category: tax_category) }
+    let(:tax_string) { "VAT Tax 10.0% (Included in Price)" }
+
+    # Regression test for #129
+    context "from countries where VAT is applied" do
+
+      before do
+        Spree::Zone.last.update_attribute(:default_tax, true)
+      end
+
+      specify do
+        add_to_cart(product3)
+        visit '/cart'
+
+        within("#cart_adjustments") do
+          page.should have_content(tax_string)
+        end
+
+        click_button 'Checkout'
+        fill_in_guest
+        fill_in_billing
+        click_button "Save and Continue"
+        click_button "Save and Continue"
+        find("#paypal_button").click
+
+        within_transaction_cart do
+          # included taxes should not go on paypal
+          page.should_not have_content(tax_string)
+        end
+
+        login_to_paypal
+        click_button "Pay Now"
+
+        page.should have_content("Your order has been processed successfully")
+      end
+    end
+
+    # Regression test for #17
+    context "from countries where VAT is refunded" do
+      # this is required, but we will not use this zone on this checkout
+      let!(:default_tax_zone) { create(:zone, default_tax: true) }
+
+      specify do
+        add_to_cart(product3)
+        click_button 'Checkout'
+        fill_in_guest
+        fill_in_billing
+        click_button "Save and Continue"
+
+        within("#checkout-summary") do
+          page.should have_content("Refund #{tax_string}")
+        end
+
+        click_button "Save and Continue"
+        find("#paypal_button").click
+
+        within_transaction_cart do
+          # included taxes should not reach paypal
+          page.should have_content(tax_string)
+        end
+
+        login_to_paypal
+        click_button "Pay Now"
+
+        page.should have_content("Your order has been processed successfully")
+      end
     end
   end
 
@@ -314,7 +364,6 @@ describe "PayPal", :js => true do
         # Delivery step doesn't require any action
         click_button "Save and Continue"
         find("#paypal_button").click
-        switch_to_paypal_login
         login_to_paypal
         click_button("Pay Now")
         page.should have_content("Your order has been processed successfully")
@@ -327,10 +376,10 @@ describe "PayPal", :js => true do
       end
 
       it "can refund payments fully" do
+        payment = Spree::Payment.last
         click_button "Refund"
         page.should have_content("PayPal refund successful")
 
-        payment = Spree::Payment.last
         source = payment.source
         source.refund_transaction_id.should_not be_blank
         source.refunded_at.should_not be_blank
