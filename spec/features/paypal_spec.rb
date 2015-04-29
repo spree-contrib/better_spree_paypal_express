@@ -1,5 +1,6 @@
 describe "PayPal", :js => true do
   let!(:product) { FactoryGirl.create(:product, :name => 'iPad') }
+  let!(:store) { FactoryGirl.create(:store) }
 
   before do
     @gateway = Spree::Gateway::PayPalExpress.create!({
@@ -13,24 +14,38 @@ describe "PayPal", :js => true do
   end
 
   def fill_in_billing
-    within("#billing") do
-      fill_in "First Name", :with => "Test"
-      fill_in "Last Name", :with => "User"
-      fill_in "Street Address", :with => "1 User Lane"
-      # City, State and ZIP must all match for PayPal to be happy
-      fill_in "City", :with => "Adamsville"
-      select "United States of America", :from => "order_bill_address_attributes_country_id"
-      select "Alabama", :from => "order_bill_address_attributes_state_id"
-      fill_in "Zip", :with => "35005"
-      fill_in "Phone", :with => "555-123-4567"
-    end
+    fill_in "order_bill_address_attributes_firstname", :with => "Test"
+    fill_in "order_bill_address_attributes_lastname", :with => "User"
+    fill_in "order_bill_address_attributes_address1", :with => "1 User Lane"
+    # City, State and ZIP must all match for PayPal to be happy
+    fill_in "order_bill_address_attributes_city", :with => "Adamsville"
+    select "United States of America", :from => "order_bill_address_attributes_country_id"
+    select "Alabama", :from => "order_bill_address_attributes_state_id"
+    fill_in "order_bill_address_attributes_zipcode", :with => "35005"
+    fill_in "order_bill_address_attributes_phone", :with => "555-123-4567"
   end
 
   def login_to_paypal
-    within("form[name='loginForm']") do
-      fill_in "username", with: "pp@spreecommerce.com"
-      fill_in "password", with: "thequickbrownfox"
-      find(".loginBtn").click
+    if page.has_selector?("#loadLogin")
+      find("#loadLogin").click
+    end
+
+    if page.has_selector?("#loginForm")
+      within("#loginForm") do
+        fill_in "Email", :with => "pp@spreecommerce.com"
+        fill_in "Password", :with => "thequickbrownfox"
+        click_button "Log in to PayPal"
+      end
+    elsif page.has_selector?("form[name='loginForm']")
+      within("form[name='loginForm']") do
+        fill_in "username", with: "pp@spreecommerce.com"
+        fill_in "password", with: "thequickbrownfox"
+        find(".loginBtn").click
+      end
+    else
+      fill_in "login_email", with: "pp@spreecommerce.com"
+      fill_in "login_password", with: "thequickbrownfox"
+      find("#submitLogin").click
     end
   end
 
@@ -45,7 +60,7 @@ describe "PayPal", :js => true do
     click_button 'Add To Cart'
     click_button 'Checkout'
     within("#guest_checkout") do
-      fill_in "Email", :with => "test@example.com"
+      fill_in "order_email", :with => "test@example.com"
       click_button 'Continue'
     end
     fill_in_billing
