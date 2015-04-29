@@ -8,4 +8,4 @@ before_script:
   - export DISPLAY=:99.0
   - bundle exec rake test_app
 script:
-  - bundle exec rspec spec
+  - bundle exec rake rspec-rerun:spec
