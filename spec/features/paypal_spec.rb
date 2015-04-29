@@ -320,7 +320,7 @@ describe "PayPal", :js => true do
         visit '/admin'
         click_link Spree::Order.last.number
         click_link "Payments"
-        find("#content").find("table").first("a").click # this clicks the first payment
+        find("#content").find("table#payments").first("a").click # this clicks the first payment
         click_link "Refund"
       end
 
