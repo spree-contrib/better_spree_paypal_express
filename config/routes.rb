@@ -15,4 +15,12 @@ Spree::Core::Engine.add_routes do
       end
     end
   end
+
+  namespace :api do
+    post '/paypal', :to => "paypal#express", :as => :paypal_express_api
+    post '/paypal/confirm', :to => "paypal#confirm", :as => :confirm_paypal_api
+    post '/paypal/cancel', :to => "paypal#cancel", :as => :cancel_paypal_api
+    get '/paypal/notify', :to => "paypal#notify", :as => :notify_paypal_api
+  end
+
 end
