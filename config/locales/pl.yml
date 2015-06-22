@@ -1,0 +1,21 @@
+---
+pl:
+  spree:
+    paypal:
+      already_refunded: "Ta płatność została zwrócona i nie można wykonywać na niej kolejnych akcji"
+      no_payment_via_admin_backend: "Aktualnie nie można obciążać konto PayPal z poziomu panelu administracyjnego."
+      transaction: "Tranzakcja PayPal"
+      payer_id: "Identyfikator Płatnika"
+      transaction_id: "Identyfikator Tranzakcji"
+      token: "Token"
+      refund: "Zwrot"
+      refund_amount: "Kwota zwrotu"
+      original_amount: "Oryginalna kwota: %{amount}"
+      refund_successful: "Zwrot PayPal zakończony sukcesem"
+      refund_unsuccessful: "Błąd podczas wykonywania zwrotu PayPal"
+      actions:
+        refund: "Zwróć Płatność"
+      flash:
+        cancel: "Nie chceż użyć PayPal? Nie ma problemu."
+        connection_failed: "Nie można było połączyć się z usługą PayPal."
+        generic_error: "Tranzakcja PayPal nie powiodła się. %{reasons}"
