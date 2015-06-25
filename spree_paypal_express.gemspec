@@ -25,7 +25,7 @@ Gem::Specification.new do |s|
   s.add_dependency 'spree_core', '~> 2.4.0'
   s.add_dependency 'spree_api', '~> 2.4.0'
   s.add_dependency 'paypal-sdk-merchant', '1.106.1'
-  s.add_dependency 'active_model_serializers', '~> 0.8.2'
+  s.add_dependency 'active_model_serializers', '0.9.0.alpha1'
 
   s.add_development_dependency 'capybara', '~> 2.1'
   s.add_development_dependency 'coffee-rails'
