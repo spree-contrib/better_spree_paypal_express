@@ -71,7 +71,7 @@ module Spree
         # else
         #   redirect_to checkout_state_path(order.state)
         # end
-        respond_with order
+        render json: order.to_json, status: 200
       end
 
       def cancel
