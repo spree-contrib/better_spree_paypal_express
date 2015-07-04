@@ -38,10 +38,9 @@ module Spree
           pp_response = provider.set_express_checkout(pp_request)
           if pp_response.success?
             url = provider.express_checkout_url(pp_response, :useraction => 'commit')
-            
-            response = Spree::Paypal.new
-            response.redirect_url = url
-            respond_with response
+            @paypal_response = Spree::Paypal.new
+            @paypal_response.redirect_url = url
+            render json: @paypal_response.to_json, status: 200
           else
             # this one is easy we can just respond with pp_response errors
             render json: {errors:pp_response.errors.collect(&:long_message).join(" ")}, status: 500
@@ -72,7 +71,7 @@ module Spree
         # else
         #   redirect_to checkout_state_path(order.state)
         # end
-        respond_with order
+        render json: order.to_json, status: 200
       end
 
       def cancel
