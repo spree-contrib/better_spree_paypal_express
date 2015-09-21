@@ -90,6 +90,45 @@ payment_method.preferred_logourl = 'http://yoursite.com/images/checkout.jpg'
 
 **Must** be an absolute path to the image.
 
+### Displaying Shipping Addresses
+
+You have the option of displaying the shipping address of an order on
+the PayPal pages:
+
+```ruby
+# Displays the shipping address of the order on the Paypal page
+payment_method.preferred_no_shipping = '0'
+
+# Do not display the shipping address on the Paypal page
+# This is the default configuration since this matches the pre-existing
+# behavior of the gem
+payment_method.preferred_no_shipping = '1'
+
+# Display the shipping address listed in the profile if it is not
+# sent along with the order
+payment_method.preferred_no_shipping = '2'
+```
+
+This has no effect on what shipping address is passed to the gateway.
+
+### Overriding the Shipping Address
+
+By default PayPay will use the shipping address that it has on file as
+the shipping address for an order.
+
+You can configure the gateway to send up the shipping address associated
+with the order through the following configuration:
+
+```ruby
+# Do not override the shipping address on file (default)
+payment_method.preferred_address_override = '0'
+
+# Override the shipping address on file
+payment_method.preferred_address_override = '1'
+```
+
+The shipping address will be sent to the server if configured to do so.
+
 ## Caveats
 
 *Caveat venditor*
