@@ -8,7 +8,7 @@ module Spree
 
       additional_adjustments = order.all_adjustments.additional
       tax_adjustments = additional_adjustments.tax
-      shipping_adjustments = additional_adjustments.shipping
+      shipping_adjustments = additional_adjustments.shipping.promotion
 
       additional_adjustments.eligible.each do |adjustment|
         next if (tax_adjustments + shipping_adjustments).include?(adjustment)
