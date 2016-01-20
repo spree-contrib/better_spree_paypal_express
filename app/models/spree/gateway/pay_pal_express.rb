@@ -56,10 +56,7 @@ module Spree
         transaction_id = pp_response.do_express_checkout_payment_response_details.payment_info.first.transaction_id
         express_checkout.update_column(:transaction_id, transaction_id)
         # This is rather hackish, required for payment/processing handle_response code.
-        Class.new do
-          def success?; true; end
-          def authorization; nil; end
-        end.new
+        Struct.new(:success?, :authorization, :avs_result, :cvv_result).new(true, transaction_id, {}, nil)
       else
         class << pp_response
           def to_s
