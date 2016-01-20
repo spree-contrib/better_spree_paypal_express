@@ -94,7 +94,13 @@ module Spree
           :state => 'completed'
         )
       end
-      refund_transaction_response
+      Struct.new(:success?, :authorization, :avs_result, :cvv_result).new(refund_transaction_response.success?, refund_transaction_response.RefundTransactionID, {}, nil)
+    end
+
+    def credit(amount, transaction_id, options = {})
+      payment = Spree::Payment.find_by(response_code: transaction_id)
+      amount = amount.to_f/100
+      refund(payment, amount)
     end
   end
 end
