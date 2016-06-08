@@ -45,7 +45,8 @@ module Spree
           :PaymentAction => "Sale",
           :Token => express_checkout.token,
           :PayerID => express_checkout.payer_id,
-          :PaymentDetails => pp_details_response.get_express_checkout_details_response_details.PaymentDetails
+          :PaymentDetails => pp_details_response.get_express_checkout_details_response_details.PaymentDetails,
+          :ButtonSource => Spree::Config.paypal_button_source
         }
       })
 

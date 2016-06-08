@@ -36,7 +36,8 @@ describe Spree::Gateway::PayPalExpress do
           :PaymentAction => "Sale",
           :Token => "fake_token",
           :PayerID => "fake_payer_id",
-          :PaymentDetails => pp_details_response.get_express_checkout_details_response_details.PaymentDetails
+          :PaymentDetails => pp_details_response.get_express_checkout_details_response_details.PaymentDetails,
+          :ButtonSource => nil
         }
       })
     end
