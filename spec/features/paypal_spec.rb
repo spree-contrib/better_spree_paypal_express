@@ -47,7 +47,7 @@ describe "PayPal", js: true do
 
   def add_to_cart(product)
     visit spree.root_path
-    click_link product.name
+    click_link product.name, match: :first
     click_button 'Add To Cart'
   end
 
