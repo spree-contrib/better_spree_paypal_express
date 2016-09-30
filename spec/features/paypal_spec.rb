@@ -1,5 +1,6 @@
 describe "PayPal", :js => true do
   let!(:product) { FactoryGirl.create(:product, :name => 'iPad') }
+
   before do
     @gateway = Spree::Gateway::PayPalExpress.create!({
       :preferred_login => "pp_api1.ryanbigg.com",
@@ -11,6 +12,7 @@ describe "PayPal", :js => true do
     })
     FactoryGirl.create(:shipping_method)
   end
+
   def fill_in_billing
     within("#billing") do
       fill_in "First Name", :with => "Test"
@@ -25,19 +27,13 @@ describe "PayPal", :js => true do
     end
   end
 
-  def switch_to_paypal_login
-    # If you go through a payment once in the sandbox, it remembers your preferred setting.
-    # It defaults to the *wrong* setting for the first time, so we need to have this method.
-    unless page.has_selector?("#login #email")
-      find("#loadLogin").click
-    end
-  end
-
   def login_to_paypal
-    within("#loginForm") do
-      fill_in "Email", :with => "pp@spreecommerce.com"
-      fill_in "Password", :with => "thequickbrownfox"
-      click_button "Log in to PayPal"
+    if page.has_selector?("#loginForm")
+      within("#loginForm") do
+        fill_in "Email", :with => "pp@spreecommerce.com"
+        fill_in "Password", :with => "thequickbrownfox"
+        click_button "Log in to PayPal"
+      end
     end
   end
 
@@ -60,7 +56,6 @@ describe "PayPal", :js => true do
     # Delivery step doesn't require any action
     click_button "Save and Continue"
     find("#paypal_button").click
-    switch_to_paypal_login
     login_to_paypal
     click_button "Pay Now"
     page.should have_content("Your order has been processed successfully")
@@ -105,8 +100,8 @@ describe "PayPal", :js => true do
     click_button 'Add To Cart'
     # TODO: Is there a better way to find this current order?
     order = Spree::Order.last
-    order.adjustments.create!(:amount => -5, :label => "$5 off")
-    order.adjustments.create!(:amount => 10, :label => "$10 on")
+    order.adjustments.create!(:amount => -5, :label => "$5 off", :order => order)
+    order.adjustments.create!(:amount => 10, :label => "$10 on", :order => order)
     visit '/cart'
     within("#cart_adjustments") do
       page.should have_content("$5 off")
@@ -129,11 +124,6 @@ describe "PayPal", :js => true do
     end
 
     login_to_paypal
-
-    within_transaction_cart do
-      page.should have_content("$5 off")
-      page.should have_content("$10 on")
-    end
 
     click_button "Pay Now"
 
@@ -222,11 +212,6 @@ describe "PayPal", :js => true do
 
       login_to_paypal
 
-      within_transaction_cart do
-        page.should have_content('iPad')
-        page.should_not have_content('iPod')
-      end
-
       click_button "Pay Now"
 
       within("#line-items") do
@@ -250,7 +235,9 @@ describe "PayPal", :js => true do
       click_button 'Add To Cart'
       # TODO: Is there a better way to find this current order?
       order = Spree::Order.last
-      order.adjustments.create!(:amount => -order.line_items.last.price, :label => "FREE iPad ZOMG!")
+      order.adjustments.create!(:amount => -order.line_items.last.price,
+                                :label => "FREE iPad ZOMG!",
+                                :order => order)
       click_button 'Checkout'
       within("#guest_checkout") do
         fill_in "Email", :with => "test@example.com"
@@ -314,7 +301,6 @@ describe "PayPal", :js => true do
         # Delivery step doesn't require any action
         click_button "Save and Continue"
         find("#paypal_button").click
-        switch_to_paypal_login
         login_to_paypal
         click_button("Pay Now")
         page.should have_content("Your order has been processed successfully")
@@ -327,10 +313,10 @@ describe "PayPal", :js => true do
       end
 
       it "can refund payments fully" do
+        payment = Spree::Payment.last
         click_button "Refund"
         page.should have_content("PayPal refund successful")
 
-        payment = Spree::Payment.last
         source = payment.source
         source.refund_transaction_id.should_not be_blank
         source.refunded_at.should_not be_blank
