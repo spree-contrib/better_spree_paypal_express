@@ -49,6 +49,8 @@ describe "PayPal", js: true do
     visit spree.root_path
     click_link product.name
     click_button 'Add To Cart'
+    sleep(1)
+    visit spree.cart_path
   end
 
   def fill_in_guest
@@ -271,10 +273,7 @@ describe "PayPal", js: true do
     specify do
       add_to_cart(product)
       click_button 'Checkout'
-      within("#guest_checkout") do
-        fill_in "Email", with: "test@example.com"
-        click_button 'Continue'
-      end
+      fill_in "Customer Email", with: "test@example.com"
       fill_in_billing
       click_button "Save and Continue"
       # Delivery step doesn't require any action
@@ -327,10 +326,9 @@ describe "PayPal", js: true do
   end
 
   context "as an admin" do
-    stub_authorization!
-
     context "refunding payments" do
       before do
+        stub_authorization!
         visit spree.root_path
         click_link 'iPad'
         click_button 'Add To Cart'
