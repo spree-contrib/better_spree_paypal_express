@@ -10,7 +10,7 @@ Gem::Specification.new do |s|
   s.version     = SpreePayPalExpress::VERSION
   s.summary     = 'Adds PayPal Express as a Payment Method to Spree Commerce'
   s.description = s.summary
-  s.required_ruby_version = '>= 2.1.0'
+  s.required_ruby_version = '>= 2.2.2'
 
   s.author       = 'Spree Commerce'
   s.email        = 'gems@spreecommerce.com'
@@ -22,18 +22,24 @@ Gem::Specification.new do |s|
   s.require_path = 'lib'
   s.requirements << 'none'
 
-  s.add_dependency 'spree_core', '~> 3.1.0.beta'
+  s.add_dependency 'spree_core', '>= 3.1.0', '< 4.0'
+  s.add_dependency 'spree_auth_devise', '>= 3.2.0.beta', '< 4.0'
   s.add_dependency 'paypal-sdk-merchant', '1.106.1'
 
-  s.add_development_dependency 'capybara', '~> 2.1'
-  s.add_development_dependency 'coffee-rails'
-  s.add_development_dependency 'database_cleaner', '1.0.1'
-  s.add_development_dependency 'factory_girl', '~> 4.2'
-  s.add_development_dependency 'ffaker'
-  s.add_development_dependency 'rspec-rails',  '~> 2.14.0'
-  s.add_development_dependency 'rspec-rerun'
-  s.add_development_dependency 'sass-rails', '~> 4.0.2'
+  s.add_development_dependency 'capybara'
+  s.add_development_dependency 'capybara-screenshot'
   s.add_development_dependency 'selenium-webdriver'
+  s.add_development_dependency 'coffee-rails'
+  s.add_development_dependency 'database_cleaner'
+  s.add_development_dependency 'factory_girl'
+  s.add_development_dependency 'ffaker'
+  s.add_development_dependency 'rspec-rails'
+  s.add_development_dependency 'rspec-activemodel-mocks'
+  s.add_development_dependency 'sass-rails'
   s.add_development_dependency 'simplecov'
   s.add_development_dependency 'pry'
+  s.add_development_dependency 'poltergeist'
+  s.add_development_dependency 'require_all'
+  s.add_development_dependency 'pg'
+  s.add_development_dependency 'mysql2'
 end
