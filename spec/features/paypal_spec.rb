@@ -1,4 +1,4 @@
-describe "PayPal", js: true do
+describe "PayPal", js: true, type: :feature do
   let!(:product) { FactoryGirl.create(:product, name: 'iPad') }
 
   before do
@@ -327,7 +327,9 @@ describe "PayPal", js: true do
   end
 
   context "as an admin" do
-    stub_authorization!
+    before do
+      stub_authorization!
+    end
 
     context "refunding payments" do
       before do

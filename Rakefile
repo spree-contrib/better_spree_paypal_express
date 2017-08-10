@@ -12,7 +12,6 @@ end
 
 require 'rspec/core'
 require 'rspec/core/rake_task'
-require 'rspec-rerun'
 require 'spree/testing_support/extension_rake'
 
 RSpec::Core::RakeTask.new(:spec) do |t|
@@ -24,7 +23,7 @@ task :coverage do
   ENV['COVERAGE'] = 'true'
   Rake::Task["spec"].execute
 end
-task :default => 'rspec-rerun:spec'
+task :default => 'spec'
 
 
 Bundler::GemHelper.install_tasks

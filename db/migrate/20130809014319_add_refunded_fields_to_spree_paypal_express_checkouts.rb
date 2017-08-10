@@ -1,4 +1,4 @@
-class AddRefundedFieldsToSpreePaypalExpressCheckouts < ActiveRecord::Migration
+class AddRefundedFieldsToSpreePaypalExpressCheckouts < ActiveRecord::Migration[4.2]
   def change
     add_column :spree_paypal_express_checkouts, :refund_transaction_id, :string
     add_column :spree_paypal_express_checkouts, :refunded_at, :datetime

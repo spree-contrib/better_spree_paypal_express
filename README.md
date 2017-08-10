@@ -120,6 +120,12 @@ Starting point:
 
 * Fork the repo
 * Clone your repo
+* Install `phantomjs`:
+
+```
+brew install phantomjs
+```
+
 * Run `bundle install`
 * Run `bundle exec rake test_app` to create the test application in `spec/dummy`
 * Make your changes
