@@ -9,22 +9,19 @@ describe Spree::PaypalController do
 
     context "express" do
       it "raises ActiveRecord::RecordNotFound" do
-        expect(lambda { get :express, :use_route => :spree }).
-          to raise_error(ActiveRecord::RecordNotFound)
+        expect { get :express }.to raise_error(ActiveRecord::RecordNotFound)
       end
     end
 
     context "confirm" do
       it "raises ActiveRecord::RecordNotFound" do
-        expect(lambda { get :confirm, :use_route => :spree }).
-          to raise_error(ActiveRecord::RecordNotFound)
+        expect { get :confirm }.to raise_error(ActiveRecord::RecordNotFound)
       end
     end
 
     context "cancel" do
       it "raises ActiveRecord::RecordNotFound" do
-        expect(lambda { get :cancel, :use_route => :spree }).
-          to raise_error(ActiveRecord::RecordNotFound)
+        expect{ get :cancel }.to raise_error(ActiveRecord::RecordNotFound)
       end
     end
   end

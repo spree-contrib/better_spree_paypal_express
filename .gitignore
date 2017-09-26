@@ -13,3 +13,4 @@ rspec.failures
 .idea
 .ruby-version
 .ruby-gemset
+gemfiles/*.lock
