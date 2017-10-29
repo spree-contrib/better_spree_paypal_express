@@ -1,5 +1,5 @@
 describe "PayPal", js: true do
-  let!(:product) { FactoryGirl.create(:product, name: 'iPad') }
+  let!(:product) { FactoryBot.create(:product, name: 'iPad') }
 
   before do
     @gateway = Spree::Gateway::PayPalExpress.create!({
@@ -9,7 +9,7 @@ describe "PayPal", js: true do
       name: "PayPal",
       active: true
     })
-    FactoryGirl.create(:shipping_method)
+    FactoryBot.create(:shipping_method)
   end
 
   def fill_in_billing
@@ -189,7 +189,7 @@ describe "PayPal", js: true do
 
   # Regression test for #10
   context "will skip $0 items" do
-    let!(:product2) { FactoryGirl.create(:product, name: 'iPod') }
+    let!(:product2) { FactoryBot.create(:product, name: 'iPod') }
 
     xit do
       add_to_cart(product)
@@ -287,7 +287,7 @@ describe "PayPal", js: true do
     let(:tax_rate) { create(:tax_rate, name: 'VAT Tax', amount: 0.1,
                             zone: Spree::Zone.first, included_in_price: true) }
     let(:tax_category) { create(:tax_category, tax_rates: [tax_rate]) }
-    let(:product3) { FactoryGirl.create(:product, name: 'EU Charger', tax_category: tax_category) }
+    let(:product3) { FactoryBot.create(:product, name: 'EU Charger', tax_category: tax_category) }
     let(:tax_string) { "VAT Tax 10.0%" }
 
     # Regression test for #129
