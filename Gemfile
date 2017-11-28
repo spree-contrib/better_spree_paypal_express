@@ -6,6 +6,8 @@ gem 'sqlite3'
 gem 'pg'
 gem 'database_cleaner', '1.0.1'
 
+gem 'rake', '10.1.0'
+
 group :test do
  gem 'yarjuf'
  gem 'require_all'
