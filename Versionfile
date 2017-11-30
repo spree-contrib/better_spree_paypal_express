@@ -1,0 +1,2 @@
+# This file is needed to make `rake test_app` generates propper path for Gemfile
+# See https://github.com/degica/liquidus/blob/master/core/lib/generators/spree/dummy/dummy_generator.rb#L99

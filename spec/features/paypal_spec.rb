@@ -35,10 +35,54 @@ describe "PayPal", :js => true do
   def switch_to_paypal_login
     # If you go through a payment once in the sandbox, it remembers your preferred setting.
     # It defaults to the *wrong* setting for the first time, so we need to have this method.
-    unless page.has_selector?("#login_email")
-      find("#loadLogin").click
+    sleep 3
+    if page.has_selector?(".baslLoginButtonContainer a")
+      login_button = find(".baslLoginButtonContainer a")
+      sleep 3 # wait for click handler ready
+      login_button.click
     end
   end
+
+  def pay_with_paypal_account
+    if page.has_selector?("#injectedUnifiedLogin iframe")
+      frame = find("#injectedUnifiedLogin iframe")
+      sleep 3 # wait for the frame contents ready
+      within_frame(frame) do
+        fill_in "login_email", :with => "pp@spreecommerce.com"
+        fill_in "login_password", :with => "thequickbrownfox"
+        sleep 5
+        click_button "Log In"
+      end
+    end
+    sleep 3
+    find('#button.reviewButton', wait: 120) # wait for the next button appears
+    sleep 5 # wait for click handler ready
+    click_button "Pay Now"
+  end
+
+  def confirm_success
+    find('.flash.notice', wait: 60)
+    page.should have_content("Your order has been processed successfully", wait: 60)
+  end
+
+  def check_minicart(&block)
+    minicart = find('#transactionCart', wait: 60)
+    sleep 3 # wait for dropdown ready
+    if minicart.has_selector?('.arrow', wait: 10) 
+      sleep 5 # wait for click handler ready
+      find('.arrow').click # show the details
+      sleep 3 # wait for dropdown items shown
+      find('.detail-items', wait: 60) # wait for the dropdown appears
+      within(find('.detail-items')) do
+        block.call
+      end
+    else
+      within(minicart) do
+        block.call
+      end
+    end
+  end
+
   it "pays for an order successfully" do
     visit spree.root_path
     click_link 'iPad'
@@ -54,11 +98,8 @@ describe "PayPal", :js => true do
     click_button "Save and Continue"
     find("#paypal_button").click
     switch_to_paypal_login
-    fill_in "login_email", :with => "pp@spreecommerce.com"
-    fill_in "login_password", :with => "thequickbrownfox"
-    click_button "Log In"
-    find("#continue_abovefold").click   # Because there's TWO continue buttons.
-    page.should have_content("Your order has been processed successfully")
+    pay_with_paypal_account
+    confirm_success
 
     Spree::Payment.last.source.transaction_id.should_not be_blank
   end
@@ -86,7 +127,8 @@ describe "PayPal", :js => true do
     # Delivery step doesn't require any action
     click_button "Save and Continue"
     find("#paypal_button").click
-    within("#miniCart") do
+
+    check_minicart do
       page.should have_content("$5 off")
       page.should have_content("$10 on")
     end
@@ -118,7 +160,7 @@ describe "PayPal", :js => true do
       # Delivery step doesn't require any action
       click_button "Save and Continue"
       find("#paypal_button").click
-      within("#miniCart") do
+      check_minicart do
         page.should have_content('iPad')
         page.should_not have_content('iPod')
       end
@@ -150,8 +192,8 @@ describe "PayPal", :js => true do
       # Delivery step doesn't require any action
       click_button "Save and Continue"
       find("#paypal_button").click
-      within("#miniCart") do
-        page.should have_content('Current purchase')
+      check_minicart do
+        page.should have_content('$10.00 USD')
       end
     end
   end
@@ -199,11 +241,8 @@ describe "PayPal", :js => true do
         click_button "Save and Continue"
         find("#paypal_button").click
         switch_to_paypal_login
-        fill_in "login_email", :with => "pp@spreecommerce.com"
-        fill_in "login_password", :with => "thequickbrownfox"
-        click_button "Log In"
-        find("#continue_abovefold").click   # Because there's TWO continue buttons.
-        page.should have_content("Your order has been processed successfully")
+        pay_with_paypal_account
+        confirm_success
 
         visit '/admin'
         click_link Spree::Order.last.number
