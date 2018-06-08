@@ -42,6 +42,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'poltergeist'
   s.add_development_dependency 'require_all'
   s.add_development_dependency 'pg', '~> 0.18'
+  s.add_development_dependency 'puma'
   s.add_development_dependency 'mysql2'
   s.add_development_dependency 'sqlite3'
   s.add_development_dependency 'appraisal'
