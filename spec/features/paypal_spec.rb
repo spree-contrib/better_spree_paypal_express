@@ -28,7 +28,9 @@ describe "PayPal", js: true do
     # If you go through a payment once in the sandbox, it remembers your preferred setting.
     # It defaults to the *wrong* setting for the first time, so we need to have this method.
     unless page.has_selector?("#login #email")
-      find("#loadLogin").click
+      within("#loginSection") do
+        click_button 'Log In'
+      end
     end
   end
 
@@ -54,21 +56,30 @@ describe "PayPal", js: true do
   end
 
   def fill_in_guest
-    within("#guest_checkout") do
-      fill_in "Email", with: "test@example.com"
-      click_button 'Continue'
-    end
+    fill_in :order_email, with: 'test@example.com'
   end
 
-  xit "pays for an order successfully" do
+  it "pays for an order successfully" do
     add_to_cart(product)
     click_button 'Checkout'
     fill_in_guest
     fill_in_billing
+
+    # Filled the Address Forms
+    save_and_open_screenshot
+    binding.pry
     click_button "Save and Continue"
+
     # Delivery step doesn't require any action
     click_button "Save and Continue"
+
+    # Reached the Payment step in the Checkout flow
+    save_and_open_screenshot
+    binding.pry
     find("#paypal_button").click
+
+    save_and_open_screenshot
+    binding.pry  # Stuck in the previous step. The click didn't redirect properly
     switch_to_paypal_login
     login_to_paypal
     click_button "Pay Now"
