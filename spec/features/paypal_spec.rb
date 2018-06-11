@@ -28,17 +28,17 @@ describe "PayPal", js: true do
     # If you go through a payment once in the sandbox, it remembers your preferred setting.
     # It defaults to the *wrong* setting for the first time, so we need to have this method.
     unless page.has_selector?("#login #email")
-      within("#loginSection") do
-        click_button 'Log In'
+      within("#loginSection", wait: 10) do
+        click_link 'Log In'
       end
     end
   end
 
   def login_to_paypal
-    within("#loginForm") do
-      fill_in "Email", with: "pp@spreecommerce.com"
-      fill_in "Password", with: "thequickbrownfox"
-      click_button "Log in to PayPal"
+    within("#login form", wait: 10) do
+       fill_in "Email", with: "pp@spreecommerce.com"
+       fill_in "Password", with: "thequickbrownfox"
+       click_button "Log In"
     end
   end
 
@@ -64,26 +64,15 @@ describe "PayPal", js: true do
     click_button 'Checkout'
     fill_in_guest
     fill_in_billing
-
-    # Filled the Address Forms
-    save_and_open_screenshot
-    binding.pry
     click_button "Save and Continue"
-
     # Delivery step doesn't require any action
     click_button "Save and Continue"
-
-    # Reached the Payment step in the Checkout flow
-    save_and_open_screenshot
-    binding.pry
     find("#paypal_button").click
-
-    save_and_open_screenshot
-    binding.pry  # Stuck in the previous step. The click didn't redirect properly
     switch_to_paypal_login
     login_to_paypal
-    click_button "Pay Now"
-    page.should have_content("Your order has been processed successfully")
+
+    click_button "Pay Now", wait: 15 # allow longer max wait because of PayPal sandbox speed
+    page.should have_content("Your order has been processed successfully", wait: 15)
 
     Spree::Payment.last.source.transaction_id.should_not be_blank
   end
