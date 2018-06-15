@@ -1,26 +1,45 @@
 sudo: required
 dist: trusty
 
-before_script: "bundle install"
+language: ruby
+
 script:
   - bundle exec rake test_app
-  - bundle exec rake spec
+  - travis_retry bundle exec rake spec
 
 env:
   - DB=mysql
   - DB=postgres
 
-language: ruby
-
 rvm:
-  - 2.3.1
-  - 2.2.7
+  - 2.2.10
+  - 2.3.7
+  - 2.4.4
+  - 2.5.1
 
 gemfile:
   - gemfiles/spree_3_1.gemfile
   - gemfiles/spree_3_2.gemfile
   - gemfiles/spree_3_3.gemfile
+  - gemfiles/spree_3_4.gemfile
+  - gemfiles/spree_3_5.gemfile
+  - gemfiles/spree_3_6.gemfile
   - gemfiles/spree_master.gemfile
 
 before_install:
   - mysql -u root -e "GRANT ALL ON *.* TO 'travis'@'%';"
+
+matrix:
+  exclude:
+    - rvm: 2.5.1
+      gemfile: gemfiles/spree_3_1.gemfile
+    - rvm: 2.5.1
+      gemfile: gemfiles/spree_3_2.gemfile
+    - rvm: 2.5.1
+      gemfile: gemfiles/spree_3_3.gemfile
+    - rvm: 2.5.1
+      gemfile: gemfiles/spree_3_4.gemfile
+    - rvm: 2.5.1
+      gemfile: gemfiles/spree_3_5.gemfile
+  allow_failures:
+        - gemfile: gemfiles/spree_master.gemfile
