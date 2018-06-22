@@ -3,6 +3,8 @@
 source "https://rubygems.org"
 
 gem "spree", "~> 3.1.0"
+gem "activerecord", "~> 4.2.10"
+gem "mysql2", "~> 0.4.10"
 gem "rails_test_params_backport", group: :test
 
 gemspec path: "../"

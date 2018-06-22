@@ -1,5 +1,8 @@
 describe "PayPal", js: true do
   let!(:product) { FactoryBot.create(:product, name: 'iPad') }
+  let!(:long_max_wait) { 180 }
+  let!(:medium_max_wait) { 30 }
+  let!(:forced_sleep) { 15 }
 
   before do
     @gateway = Spree::Gateway::PayPalExpress.create!({
@@ -28,21 +31,23 @@ describe "PayPal", js: true do
     # If you go through a payment once in the sandbox, it remembers your preferred setting.
     # It defaults to the *wrong* setting for the first time, so we need to have this method.
     unless page.has_selector?("#login #email")
-      find("#loadLogin").click
+      within("#loginSection", wait: medium_max_wait) do
+        click_link 'Log In'
+      end
     end
   end
 
   def login_to_paypal
-    within("#loginForm") do
-      fill_in "Email", with: "pp@spreecommerce.com"
-      fill_in "Password", with: "thequickbrownfox"
-      click_button "Log in to PayPal"
+    within("#login form", wait: medium_max_wait) do
+       fill_in "Email", with: "pp@spreecommerce.com"
+       fill_in "Password", with: "thequickbrownfox"
+       click_button "Log In"
     end
   end
 
   def within_transaction_cart(&block)
-    find(".transactionDetails").click
-    within(".transctionCartDetails") { block.call }
+    find(".transactionDetails").trigger('click')
+    within(".transctionCartDetails", wait: medium_max_wait) { block.call }
   end
 
   def add_to_cart(product)
@@ -54,13 +59,17 @@ describe "PayPal", js: true do
   end
 
   def fill_in_guest
-    within("#guest_checkout") do
-      fill_in "Email", with: "test@example.com"
-      click_button 'Continue'
-    end
+    fill_in :order_email, with: 'test@example.com'
   end
 
-  xit "pays for an order successfully" do
+  def click_pay_button
+    # The pay button in the PayPal sandbox is troublesome: Wrap it around sleeps
+    sleep(forced_sleep)
+    click_button "Pay Now", wait: long_max_wait
+    sleep(forced_sleep)
+  end
+
+  it "pays for an order successfully" do
     add_to_cart(product)
     click_button 'Checkout'
     fill_in_guest
@@ -68,12 +77,12 @@ describe "PayPal", js: true do
     click_button "Save and Continue"
     # Delivery step doesn't require any action
     click_button "Save and Continue"
-    find("#paypal_button").click
+    find("#paypal_button", wait: medium_max_wait).click
+
     switch_to_paypal_login
     login_to_paypal
-    click_button "Pay Now"
-    page.should have_content("Your order has been processed successfully")
-
+    click_pay_button
+    page.should have_content("Your order has been processed successfully", wait: long_max_wait)
     Spree::Payment.last.source.transaction_id.should_not be_blank
   end
 
@@ -82,64 +91,67 @@ describe "PayPal", js: true do
       @gateway.preferred_solution = 'Sole'
     end
 
-    xit "passes user details to PayPal" do
+    it "passes user details to PayPal" do
       add_to_cart(product)
       click_button 'Checkout'
-      within("#guest_checkout") do
-        fill_in "Email", with: "test@example.com"
-        click_button 'Continue'
-      end
+      fill_in_guest
       fill_in_billing
       click_button "Save and Continue"
       # Delivery step doesn't require any action
       click_button "Save and Continue"
-      find("#paypal_button").click
+      find("#paypal_button", wait: medium_max_wait).click
 
+      switch_to_paypal_login
       login_to_paypal
-      click_button "Pay Now"
-
-      page.should have_selector '[data-hook=order-bill-address] .fn', text: 'Test User'
-      page.should have_selector '[data-hook=order-bill-address] .adr', text: '1 User Lane'
-      page.should have_selector '[data-hook=order-bill-address] .adr', text: 'Adamsville AL 35005'
-      page.should have_selector '[data-hook=order-bill-address] .adr', text: 'United States'
-      page.should have_selector '[data-hook=order-bill-address] .tel', text: '555-123-4567'
+      click_pay_button
+      within("#order_summary", wait: long_max_wait) do
+        page.should have_selector '[data-hook=order-bill-address] .fn', text: 'Test User'
+        page.should have_selector '[data-hook=order-bill-address] .adr', text: '1 User Lane'
+        page.should have_selector '[data-hook=order-bill-address] .adr .local .locality', text: 'Adamsville'
+        page.should have_selector '[data-hook=order-bill-address] .adr .local .postal-code', text: '35005'
+        page.should have_selector '[data-hook=order-bill-address] .tel', text: '555-123-4567'
+      end
     end
   end
 
-  xit "includes adjustments in PayPal summary" do
+  it "includes adjustments in PayPal summary" do
     add_to_cart(product)
     # TODO: Is there a better way to find this current order?
     order = Spree::Order.last
-    order.adjustments.create!(amount: -5, label: "$5 off")
-    order.adjustments.create!(amount: 10, label: "$10 on")
+    Spree::Adjustment.create!(label: "$5 off", adjustable: order, order: order, amount: -5)
+    Spree::Adjustment.create!(label: "$10 on", adjustable: order, order: order, amount: 10)
     visit '/cart'
     within("#cart_adjustments") do
       page.should have_content("$5 off")
       page.should have_content("$10 on")
     end
+
     click_button 'Checkout'
     fill_in_guest
     fill_in_billing
     click_button "Save and Continue"
     # Delivery step doesn't require any action
     click_button "Save and Continue"
-    find("#paypal_button").click
-
-    within_transaction_cart do
-      page.should have_content("$5 off")
-      page.should have_content("$10 on")
+    find("#paypal_button", wait: medium_max_wait).click
+    within('.cartContainer', wait: long_max_wait) do
+      within_transaction_cart do
+        page.should have_content("$5 off")
+        page.should have_content("$10 on")
+      end
     end
 
+    find('#closeCart').trigger('click') # Hide cart overlay so the click isn't blocked by it
+    switch_to_paypal_login
     login_to_paypal
-
-    within_transaction_cart do
-      page.should have_content("$5 off")
-      page.should have_content("$10 on")
+    within('.cartContainer', wait: long_max_wait) do
+      within_transaction_cart do
+        page.should have_content("$5 off")
+        page.should have_content("$10 on")
+      end
     end
 
-    click_button "Pay Now"
-
-    within("[data-hook=order_details_adjustments]") do
+    click_pay_button
+    within("[data-hook=order_details_adjustments]", wait: long_max_wait) do
       page.should have_content("$5 off")
       page.should have_content("$10 on")
     end
@@ -153,7 +165,7 @@ describe "PayPal", js: true do
       promotion.actions << action
     end
 
-    xit "includes line item adjustments in PayPal summary" do
+    it "includes line item adjustments in PayPal summary" do
       add_to_cart(product)
       # TODO: Is there a better way to find this current order?
       order = Spree::Order.last
@@ -163,25 +175,26 @@ describe "PayPal", js: true do
       within("#cart_adjustments") do
         page.should have_content("10% off")
       end
+
       click_button 'Checkout'
-      within("#guest_checkout") do
-        fill_in "Email", with: "test@example.com"
-        click_button 'Continue'
-      end
+      fill_in_guest
       fill_in_billing
       click_button "Save and Continue"
       # Delivery step doesn't require any action
       click_button "Save and Continue"
-      find("#paypal_button").click
-
-      within_transaction_cart do
-        page.should have_content("10% off")
+      find("#paypal_button", wait: medium_max_wait).click
+      within('.cartContainer', wait: long_max_wait) do
+        within_transaction_cart do
+          page.should have_content("10% off")
+        end
       end
 
+      find('#closeCart').trigger('click') # Hide cart overlay so the click isn't blocked by it
+      switch_to_paypal_login
       login_to_paypal
-      click_button "Pay Now"
 
-      within("[data-hook=order_details_price_adjustments]") do
+      click_pay_button
+      within("[data-hook=order_details_price_adjustments]", wait: long_max_wait) do
         page.should have_content("10% off")
       end
     end
@@ -194,36 +207,35 @@ describe "PayPal", js: true do
     xit do
       add_to_cart(product)
       add_to_cart(product2)
-
       # TODO: Is there a better way to find this current order?
-      order = Spree::Order.last
+      script_content = page.all('body script', visible: false).last['innerHTML']
+      order_id = script_content.strip.split("\"")[1]
+      order = Spree::Order.find_by(number: order_id)
       order.line_items.last.update_attribute(:price, 0)
       click_button 'Checkout'
-      within("#guest_checkout") do
-        fill_in "Email", with: "test@example.com"
-        click_button 'Continue'
-      end
+      fill_in_guest
       fill_in_billing
       click_button "Save and Continue"
       # Delivery step doesn't require any action
       click_button "Save and Continue"
-      find("#paypal_button").click
-
-      within_transaction_cart do
-        page.should have_content('iPad')
-        page.should_not have_content('iPod')
+      find("#paypal_button", wait: medium_max_wait).click
+      within('.cartContainer', wait: long_max_wait) do
+        within_transaction_cart do
+          page.should have_content('iPad')
+          page.should_not have_content('iPod')
+        end
       end
 
+      find('#closeCart').trigger('click') # Hide cart overlay so the click isn't blocked by it
+      switch_to_paypal_login
       login_to_paypal
-
       within_transaction_cart do
         page.should have_content('iPad')
         page.should_not have_content('iPod')
       end
 
-      click_button "Pay Now"
-
-      within("#line-items") do
+      click_pay_button
+      within("#line-items", wait: long_max_wait) do
         page.should have_content('iPad')
         page.should have_content('iPod')
       end
@@ -242,23 +254,21 @@ describe "PayPal", js: true do
       add_to_cart(product)
       # TODO: Is there a better way to find this current order?
       order = Spree::Order.last
-      order.adjustments.create!(amount: -order.line_items.last.price, label: "FREE iPad ZOMG!")
+      Spree::Adjustment.create!(label: "FREE iPad ZOMG!", adjustable: order, order: order, amount: -order.line_items.last.price)
       click_button 'Checkout'
-      within("#guest_checkout") do
-        fill_in "Email", with: "test@example.com"
-        click_button 'Continue'
-      end
+      fill_in_guest
       fill_in_billing
       click_button "Save and Continue"
       # Delivery step doesn't require any action
       click_button "Save and Continue"
-      find("#paypal_button").click
+      find("#paypal_button", wait: medium_max_wait).click
 
+      # find('#closeCart').trigger('click') # Hide cart overlay so the click isn't blocked by it
+      switch_to_paypal_login
       login_to_paypal
 
-      click_button "Pay Now"
-
-      within("[data-hook=order_details_adjustments]") do
+      click_pay_button
+      within("[data-hook=order_details_adjustments]", wait: long_max_wait) do
         page.should have_content('FREE iPad ZOMG!')
       end
     end
@@ -278,7 +288,7 @@ describe "PayPal", js: true do
       click_button "Save and Continue"
       # Delivery step doesn't require any action
       click_button "Save and Continue"
-      find("#paypal_button").click
+      find("#paypal_button", wait: medium_max_wait).click
       page.should have_content("PayPal failed. Security header is not valid")
     end
   end
@@ -297,7 +307,7 @@ describe "PayPal", js: true do
         Spree::Zone.first.update_attribute(:default_tax, true)
       end
 
-      xit do
+      it do
         add_to_cart(product3)
         visit '/cart'
 
@@ -309,17 +319,25 @@ describe "PayPal", js: true do
         fill_in_guest
         fill_in_billing
         click_button "Save and Continue"
+        # Delivery step doesn't require any action
         click_button "Save and Continue"
-        find("#paypal_button").click
+        find("#paypal_button", wait: medium_max_wait).click
 
-        within_transaction_cart do
-          # included taxes should not go on paypal
-          page.should_not have_content(tax_string)
+        within('.cartContainer', wait: long_max_wait) do
+          within_transaction_cart do
+            # included taxes should not go on paypal
+            page.should_not have_content(tax_string)
+          end
         end
 
+        find('#closeCart').trigger('click') # Hide cart overlay so the click isn't blocked by it
+        switch_to_paypal_login
         login_to_paypal
-        click_button "Pay Now"
-        page.should have_content("Your order has been processed successfully")
+
+        sleep(forced_sleep)
+        click_button "Pay Now", wait: long_max_wait
+        sleep(forced_sleep)
+        page.should have_content("Your order has been processed successfully", wait: long_max_wait)
       end
     end
 
@@ -341,7 +359,7 @@ describe "PayPal", js: true do
         click_button "Save and Continue"
         # Delivery step doesn't require any action
         click_button "Save and Continue"
-        find("#paypal_button").click
+        find("#paypal_button", wait: medium_max_wait).click
         switch_to_paypal_login
         login_to_paypal
         click_button("Pay Now")
