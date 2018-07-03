@@ -1,10 +1,3 @@
-appraise 'spree-3-1' do
-  gem 'spree', '~> 3.1.0'
-  gem 'activerecord', '~> 4.2.10'
-  gem 'mysql2', '~> 0.4.10'
-  gem 'rails_test_params_backport', group: :test
-end
-
 appraise 'spree-3-2' do
   gem 'spree', '~> 3.2.0'
   gem 'rails-controller-testing'
