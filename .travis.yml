@@ -12,13 +12,11 @@ env:
   - DB=postgres
 
 rvm:
-  - 2.2.10
   - 2.3.7
   - 2.4.4
   - 2.5.1
 
 gemfile:
-  - gemfiles/spree_3_1.gemfile
   - gemfiles/spree_3_2.gemfile
   - gemfiles/spree_3_3.gemfile
   - gemfiles/spree_3_4.gemfile
@@ -31,8 +29,6 @@ before_install:
 
 matrix:
   exclude:
-    - rvm: 2.5.1
-      gemfile: gemfiles/spree_3_1.gemfile
     - rvm: 2.5.1
       gemfile: gemfiles/spree_3_2.gemfile
     - rvm: 2.5.1
