@@ -1,12 +1,22 @@
 <%= form_tag paypal_refund_admin_order_payment_path(@order, @payment) do %>
-  <div class="label-block left five columns alpha">
+  <div class="label-block col-5">
     <div>
       <fieldset data-hook="admin_variant_new_form">
-        <legend><%= Spree.t('refund', :scope => :paypal) %></legend>
+        <legend>
+          <%= Spree.t('refund', :scope => :paypal) %>
+        </legend>
+        
         <div class='field'>
           <%= label_tag 'refund_amount', Spree.t(:refund_amount, :scope => 'paypal') %>
-          <small><em><%= Spree.t(:original_amount, :scope => 'paypal', :amount => @payment.display_amount) %></em></small><br>
+          <small>
+            <em>
+              <%= Spree.t(:original_amount, :scope => 'paypal', :amount => @payment.display_amount) %>
+            </em>
+          </small>
+          <br />
+          
           <% symbol = ::Money.new(1, Spree::Config[:currency]).symbol %>
+          
           <% if Spree::Config[:currency_symbol_position] == "before" %>
             <%= symbol %><%= text_field_tag 'refund_amount', @payment.amount %>
           <% else %>

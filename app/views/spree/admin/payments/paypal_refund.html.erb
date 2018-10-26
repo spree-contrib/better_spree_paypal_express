@@ -7,7 +7,7 @@
 <% end %>
 
 <%= form_tag paypal_refund_admin_order_payment_path(@order, @payment) do %>
-  <div class="label-block left five columns alpha">
+  <div class="label-block col-5">
     <div>
       <fieldset data-hook="admin_variant_new_form">
         <legend><%= Spree.t('refund', :scope => :paypal) %></legend>
