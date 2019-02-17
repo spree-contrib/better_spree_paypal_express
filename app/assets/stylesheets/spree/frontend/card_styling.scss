@@ -11,6 +11,10 @@
   border-radius: 4px;
 }
 
+  li a {
+    line-height: 1em;
+  }
+
 div#paypal_express_checkout{
     margin-top: 10px;
     text-align: center;
@@ -72,7 +76,6 @@ div#paypal_express_checkout{
         img {
           display: inline-block;
           width: 18%;
-          margin: 1px 0.3% 0 0.3%;
         }
 
         &:hover {
