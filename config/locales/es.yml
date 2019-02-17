@@ -2,6 +2,7 @@
 es:
   spree:
     paypal:
+      powered_by: "Asegurar el pago y envío por"
       already_refunded: "Este pago ha sido reembolsado y ahora no acción puede ser ejecutado en ello."
       no_payment_via_admin_backend: "No se puede cobrar cuentas de PayPal por medio del admin en este momento."
       transaction: "Transacción de PayPal"

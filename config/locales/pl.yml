@@ -2,6 +2,7 @@
 pl:
   spree:
     paypal:
+      powered_by: "Bezpieczne kasy zasilane przez"
       already_refunded: "Ta płatność została zwrócona i nie można wykonywać na niej kolejnych akcji"
       no_payment_via_admin_backend: "Aktualnie nie można obciążać konto PayPal z poziomu panelu administracyjnego."
       transaction: "Transakcja PayPal"

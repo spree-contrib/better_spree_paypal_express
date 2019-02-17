@@ -2,6 +2,7 @@
 it:
   spree:
     paypal:
+      powered_by: "Checkout sicuro alimentato da"
       already_refunded: "Questo pagamento è già stato rimborsato e non sono possibili altre azioni."
       no_payment_via_admin_backend: "Al momento non è possibile pagare account PayPal dall'interfaccia admin."
       transaction: "Transazione PayPal"

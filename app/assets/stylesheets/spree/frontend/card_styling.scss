@@ -1,0 +1,95 @@
+@mixin button_styles {
+  vertical-align: top;
+  text-align: left;
+  width: 100%;
+  max-width: 332px;
+  display: inline-block;
+  padding: 9px 0;
+  text-align: center;
+  overflow: hidden;
+  text-decoration: none;
+  border-radius: 4px;
+}
+
+div#paypal_express_checkout{
+    margin-top: 10px;
+    text-align: center;
+
+    a#paypal_button {
+        @include button_styles;
+        margin: 7px 0 0 0;
+        background-color: #FEC349;
+
+         img {
+           position: relative;
+           width: 96px;
+           line-height: 0.5em;
+
+           &#paypal_logo_colour {
+             width:90px;
+           }
+         }
+
+      &:hover {
+        background-color: #F2BA46;
+      }
+
+      .paypal-button-text {
+        color: #111;
+        text-align: left;
+        font-size: 0.8em;
+        font-weight: 600;
+      }
+    }
+
+    a#paypal_credit_button {
+         @include button_styles;
+         margin: 7px 0;
+         background-color: #003087;
+
+
+         img {
+           position: relative;
+           width: 66px;
+           line-height: 0.5em;
+           &#paypal_logo_white {
+             width:90px;
+           }
+         }
+
+      &:hover {
+        box-shadow: inset 0 0 100px 100px rgba(255, 255, 255, 0.2);
+      }
+    }
+
+    a#paypal_cards_button {
+
+        @include button_styles;
+         margin: 0 0 7px 0;
+         padding: 5px 28px;
+         background-color: #e3e3e3;
+
+        img {
+          display: inline-block;
+          width: 18%;
+          margin: 1px 0.3% 0 0.3%;
+        }
+
+        &:hover {
+          box-shadow: inset 0 0 100px 100px rgba(255, 255, 255, 0.2);
+        }
+
+    }
+
+    p#powered_by_pp {
+      font-size: 13px;
+      color:grey;
+      font-style: italic;
+      font-weight: 400;
+
+      img {
+        width:55px;
+      }
+    }
+
+}

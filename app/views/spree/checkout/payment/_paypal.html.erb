@@ -1,6 +1,28 @@
+<div id="paypal_express_checkout">
+    <div>
+      <%= link_to paypal_express_url(:payment_method_id => payment_method.id), :method => :post, :id => "paypal_button" do %>
+        <%= render partial: 'spree/shared/paypal_color_logo', cached: true %>
+      <% end %>
+    </div>
+<% if payment_method.preferred_solution == "Sole" %>
+    <div>
+      <%= link_to paypal_express_url(:payment_method_id => payment_method.id), :method => :post, :id => "paypal_credit_button" do %>
+        <%= render partial: 'spree/shared/paypal_white_logo', cached: true %>
+        <%= render partial: 'spree/shared/paypal_credit_white_logo', cached: true %>
+      <% end %>
+    </div>
 
-<%= link_to(image_tag("https://www.paypal.com/en_US/i/btn/btn_xpressCheckout.gif"), paypal_express_url(:payment_method_id => payment_method.id), :method => :post, :id => "paypal_button") %>
+    <div>
+      <%= link_to paypal_express_url(:payment_method_id => payment_method.id), :method => :post, :id => "paypal_cards_button" do %>
+        <%= render partial: 'spree/shared/cc_visa', cached: true %>
+        <%= render partial: 'spree/shared/cc_master_card', cached: true %>
+        <%= render partial: 'spree/shared/cc_amex', cached: true %>
+        <%= render partial: 'spree/shared/cc_discover', cached: true %>
+        <%= render partial: 'spree/shared/cc_maestro', cached: true %>
+      <% end %>
+    </div>
+    <p id="powered_by_pp"><%= Spree.t('powered_by', :scope => :paypal) %> <%= render partial: 'spree/shared/paypal_color_logo', cached: true %></p>
+<% end %>
+</div>
 
-<script>
-  SpreePaypalExpress.paymentMethodID = "<%= payment_method.id %>"  
- </script>
+<script>SpreePaypalExpress.paymentMethodID = "<%= payment_method.id %>"</script>
