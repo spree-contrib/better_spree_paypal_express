@@ -42,11 +42,11 @@ matrix:
     - rvm: 2.3.8
       gemfile: gemfiles/spree_master.gemfile
     - rvm: 2.4.5
-      gemfile: gemfiles/spree_3_3.gemfile
-    - rvm: 2.4.5
-      gemfile: gemfiles/spree_3_5.gemfile
+      gemfile: gemfiles/spree_3_2.gemfile
     - rvm: 2.4.5
       gemfile: gemfiles/spree_3_3.gemfile
+    - rvm: 2.4.5
+      gemfile: gemfiles/spree_3_6.gemfile
     - rvm: 2.4.5
       gemfile: gemfiles/spree_3_7.gemfile
     - rvm: 2.4.5
