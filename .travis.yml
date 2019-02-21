@@ -12,9 +12,10 @@ env:
   - DB=postgres
 
 rvm:
-  - 2.3.7
-  - 2.4.4
-  - 2.5.1
+  - 2.3.8
+  - 2.4.5
+  - 2.5.3
+  - 2.6.1
 
 gemfile:
   - gemfiles/spree_3_2.gemfile
@@ -22,6 +23,7 @@ gemfile:
   - gemfiles/spree_3_4.gemfile
   - gemfiles/spree_3_5.gemfile
   - gemfiles/spree_3_6.gemfile
+  - gemfiles/spree_3_7.gemfile
   - gemfiles/spree_master.gemfile
 
 before_install:
@@ -29,13 +31,49 @@ before_install:
 
 matrix:
   exclude:
-    - rvm: 2.5.1
-      gemfile: gemfiles/spree_3_2.gemfile
-    - rvm: 2.5.1
-      gemfile: gemfiles/spree_3_3.gemfile
-    - rvm: 2.5.1
+    - rvm: 2.3.8
       gemfile: gemfiles/spree_3_4.gemfile
-    - rvm: 2.5.1
+    - rvm: 2.3.8
       gemfile: gemfiles/spree_3_5.gemfile
+    - rvm: 2.3.8
+      gemfile: gemfiles/spree_3_6.gemfile
+    - rvm: 2.3.8
+      gemfile: gemfiles/spree_3_7.gemfile
+    - rvm: 2.3.8
+      gemfile: gemfiles/spree_master.gemfile
+    - rvm: 2.4.5
+      gemfile: gemfiles/spree_3_3.gemfile
+    - rvm: 2.4.5
+      gemfile: gemfiles/spree_3_5.gemfile
+    - rvm: 2.4.5
+      gemfile: gemfiles/spree_3_3.gemfile
+    - rvm: 2.4.5
+      gemfile: gemfiles/spree_3_7.gemfile
+    - rvm: 2.4.5
+      gemfile: gemfiles/spree_master.gemfile
+    - rvm: 2.5.3
+      gemfile: gemfiles/spree_3_2.gemfile
+    - rvm: 2.5.3
+      gemfile: gemfiles/spree_3_3.gemfile
+    - rvm: 2.5.3
+      gemfile: gemfiles/spree_3_4.gemfile
+    - rvm: 2.5.3
+      gemfile: gemfiles/spree_3_5.gemfile
+    - rvm: 2.5.3
+      gemfile: gemfiles/spree_master.gemfile
+    - rvm: 2.6.1
+      gemfile: gemfiles/spree_3_2.gemfile
+    - rvm: 2.6.1
+      gemfile: gemfiles/spree_3_3.gemfile
+    - rvm: 2.6.1
+      gemfile: gemfiles/spree_3_4.gemfile
+    - rvm: 2.6.1
+      gemfile: gemfiles/spree_3_5.gemfile
+    - rvm: 2.6.1
+      gemfile: gemfiles/spree_3_6.gemfile
+    - rvm: 2.6.1
+      gemfile: gemfiles/spree_3_7.gemfile
+
+
   allow_failures:
         - gemfile: gemfiles/spree_master.gemfile
