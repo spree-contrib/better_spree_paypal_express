@@ -24,5 +24,4 @@
     <p id="powered_by_pp"><%= Spree.t('powered_by', :scope => :paypal) %> <%= render partial: 'spree/shared/paypal_color_logo', cached: true %></p>
 <% end %>
 </div>
-
 <script>SpreePaypalExpress.paymentMethodID = "<%= payment_method.id %>"</script>
