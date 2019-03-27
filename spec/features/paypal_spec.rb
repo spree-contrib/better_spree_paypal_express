@@ -3,6 +3,8 @@ describe "PayPal", js: true do
   let!(:long_max_wait) { 180 }
   let!(:medium_max_wait) { 30 }
   let!(:forced_sleep) { 15 }
+  let!(:country) { FactoryBot.create(:country, name: 'United States') }
+  let!(:state)   { FactoryBot.create(:state, country: country)}
 
   before do
     @gateway = Spree::Gateway::PayPalExpress.create!({
@@ -21,7 +23,7 @@ describe "PayPal", js: true do
     fill_in :order_bill_address_attributes_address1, with: "1 User Lane"
     # City, State and ZIP must all match for PayPal to be happy
     fill_in :order_bill_address_attributes_city, with: "Adamsville"
-    select "United States of America", from: :order_bill_address_attributes_country_id
+    select "United States", from: :order_bill_address_attributes_country_id
     find('#order_bill_address_attributes_state_id').find(:xpath, 'option[2]').select_option
     fill_in :order_bill_address_attributes_zipcode, with: "35005"
     fill_in :order_bill_address_attributes_phone, with: "555-123-4567"
