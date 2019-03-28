@@ -1,10 +1,10 @@
 describe "PayPal", js: true do
-  let!(:product) { FactoryBot.create(:product, name: 'iPad') }
+  let!(:product) { create(:product, name: 'iPad') }
   let!(:long_max_wait) { 180 }
   let!(:medium_max_wait) { 30 }
   let!(:forced_sleep) { 15 }
-  let!(:country) { FactoryBot.create(:country, name: 'United States') }
-  let!(:state)   { FactoryBot.create(:state, country: country)}
+  let!(:country) { create(:country, name: 'United States') }
+  let!(:state)   { create(:state, country: country)}
 
   before do
     @gateway = Spree::Gateway::PayPalExpress.create!({
@@ -14,7 +14,7 @@ describe "PayPal", js: true do
       name: "PayPal",
       active: true
     })
-    FactoryBot.create(:shipping_method)
+    create(:shipping_method)
   end
 
   def fill_in_billing
@@ -102,8 +102,9 @@ describe "PayPal", js: true do
       # Delivery step doesn't require any action
       click_button "Save and Continue"
       find("#paypal_button", wait: medium_max_wait).click
-
+      
       switch_to_paypal_login
+      # binding.pry
       login_to_paypal
       click_pay_button
       within("#order_summary", wait: long_max_wait) do
@@ -204,7 +205,7 @@ describe "PayPal", js: true do
 
   # Regression test for #10
   context "will skip $0 items" do
-    let!(:product2) { FactoryBot.create(:product, name: 'iPod') }
+    let!(:product2) { create(:product, name: 'iPod') }
 
     xit do
       add_to_cart(product)
@@ -299,7 +300,7 @@ describe "PayPal", js: true do
     let(:tax_rate) { create(:tax_rate, name: 'VAT Tax', amount: 0.1,
                             zone: Spree::Zone.first, included_in_price: true) }
     let(:tax_category) { create(:tax_category, tax_rates: [tax_rate]) }
-    let(:product3) { FactoryBot.create(:product, name: 'EU Charger', tax_category: tax_category) }
+    let(:product3) { create(:product, name: 'EU Charger', tax_category: tax_category) }
     let(:tax_string) { "VAT Tax 10.0%" }
 
     # Regression test for #129

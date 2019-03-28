@@ -3,7 +3,7 @@ describe Spree::Gateway::PayPalExpress do
 
   context "payment purchase" do
     let(:payment) do
-      payment = FactoryBot.create(:payment, :payment_method => gateway, :amount => 10)
+      payment = create(:payment, :payment_method => gateway, :amount => 10)
       payment.stub :source => mock_model(Spree::PaypalExpressCheckout, :token => 'fake_token', :payer_id => 'fake_payer_id', :update_column => true)
       payment
     end
