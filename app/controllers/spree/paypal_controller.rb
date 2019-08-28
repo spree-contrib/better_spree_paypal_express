@@ -161,7 +161,7 @@ module Spree
           CityName: current_order.bill_address.city,
           Phone: current_order.bill_address.phone,
           StateOrProvince: current_order.bill_address.state_text,
-          Country: current_order.bill_address.country.iso,
+          countryCode: current_order.bill_address.country.iso,
           PostalCode: current_order.bill_address.zipcode
       }
     end
