@@ -2,6 +2,7 @@ require 'capybara'
 require 'capybara/rspec'
 require 'capybara/rails'
 require 'selenium-webdriver'
+require 'webdrivers'
 
 RSpec.configure do |config|
   Capybara.register_driver :chrome do |app|

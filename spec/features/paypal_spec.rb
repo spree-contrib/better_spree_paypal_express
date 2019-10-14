@@ -44,7 +44,7 @@ describe 'PayPal', js: true do
   end
 
   def within_transaction_cart(container_class, expected_texts, unexpected_texts)
-    wait_for { !page.has_css?('#preloaderSpinner') }
+    wait_for { !page.has_css?('div#preloaderSpinner') }
     wait_for { page.has_css?('span#transactionCart') }
     find('span#transactionCart').click
 
