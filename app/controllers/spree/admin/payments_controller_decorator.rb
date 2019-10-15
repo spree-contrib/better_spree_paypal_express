@@ -1,4 +1,4 @@
-Spree::Admin::PaymentsController.class_eval do
+module Spree::Admin::PaymentsControllerDecorator
   def paypal_refund
     if request.get?
       if @payment.source.state == 'refunded'
@@ -17,3 +17,5 @@ Spree::Admin::PaymentsController.class_eval do
     end
   end
 end
+
+Spree::Admin::PaymentsController.prepend Spree::Admin::PaymentsControllerDecorator

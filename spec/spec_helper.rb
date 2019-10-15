@@ -37,6 +37,7 @@ require 'spree/testing_support/url_helpers'
 require 'spree/testing_support/order_walkthrough'
 
 require 'pry'
+require 'webdrivers'
 
 RSpec.configure do |config|
   config.include FactoryBot::Syntax::Methods
@@ -67,7 +68,7 @@ RSpec.configure do |config|
   # config.mock_with :flexmock
   # config.mock_with :rr
   config.mock_with :rspec do |mocks|
-    mocks.syntax = :should
+    mocks.syntax = [:expect, :should]
   end
   config.color = true
 
