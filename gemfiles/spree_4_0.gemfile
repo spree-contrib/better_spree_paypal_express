@@ -4,6 +4,5 @@ source "https://rubygems.org"
 
 gem "spree", "~> 4.0.0.rc2"
 gem "rails-controller-testing"
-gem 'spree_auth_devise', '~> 4.0.0.rc2'
 
 gemspec path: "../"
