@@ -30,7 +30,7 @@ describe 'PayPal', js: true do
       if page.has_css?('.changeLanguage') 
         wait_for { !page.has_css?('div#preloaderSpinner') }
         find('.changeLanguage').click
-        find('a', :text => 'English').click
+        find_all('a', text: 'English')[0].click
       end
       wait_for { page.has_link?(text: 'Log In') }
       wait_for { !page.has_css?('div.spinWrap') }
@@ -94,7 +94,7 @@ describe 'PayPal', js: true do
   end
 
   def expect_successfully_processed_order
-    wait_for { page.has_text?('Your order has been processed successfully') }
+    wait_for { page.has_css?('div.alert-notice') }
     order_number = Spree::Order.last.number
     expect(page).to have_current_path("/orders/#{order_number}")
     expect(page).to have_content('Your order has been processed successfully')
