@@ -44,12 +44,16 @@ module Spree
 
     def confirm
       order = current_order || raise(ActiveRecord::RecordNotFound)
+      order_total = order.total
+      if order.payments.present?
+        order_total = order_total - order.payments.map(&:amount).sum
+      end
       order.payments.create!({
         source: Spree::PaypalExpressCheckout.create({
           token: params[:token],
           payer_id: params[:PayerID]
         }),
-        amount: order.total,
+        amount: order_total,
         payment_method: payment_method
       })
       order.next
@@ -116,6 +120,22 @@ module Spree
       # functionality doesn't currently exist in Spree core
       item_sum = current_order.total - shipment_sum - current_order.additional_tax_total
 
+      order_total = current_order.total
+      if current_order.payments.present?
+        payments = current_order.payments.map(&:amount).sum
+        payment_numbers = current_order.payments.map(&:number).join(", ")
+        item_sum = item_sum - payments
+        order_total = order_total - payments
+        items << {
+          Name: "Payment #{payment_numbers}",
+          Quantity: 1,
+          Amount: {
+            currencyID: current_order.currency,
+            value: -(payments)
+          }
+        }
+      end
+
       if item_sum.zero?
         # Paypal does not support no items or a zero dollar ItemTotal
         # This results in the order summary being simply "Current purchase"
@@ -129,7 +149,7 @@ module Spree
         {
           OrderTotal: {
             currencyID: current_order.currency,
-            value: current_order.total
+            value: order_total
           },
           ItemTotal: {
             currencyID: current_order.currency,
