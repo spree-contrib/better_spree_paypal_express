@@ -95,7 +95,8 @@ describe 'PayPal', js: true do
 
   def expect_successfully_processed_order
     wait_for { page.has_text?('Your order has been processed successfully') }
-    expect(page).to have_current_path('/webapps/hermes')
+    order_number = Spree::Order.last.number
+    expect(page).to have_current_path("/orders/#{order_number}")
     expect(page).to have_content('Your order has been processed successfully')
   end
 
