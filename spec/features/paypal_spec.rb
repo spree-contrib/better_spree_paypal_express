@@ -28,24 +28,27 @@ describe 'PayPal', js: true do
   def switch_to_paypal_login
     unless page.has_selector?('#login #email')
       if page.has_css?('.changeLanguage') 
+        wait_for { !page.has_css?('div#preloaderSpinner') }
         find('.changeLanguage').click
         find('a', :text => 'English').click
       end
       wait_for { page.has_link?(text: 'Log In') }
+      wait_for { !page.has_css?('div.spinWrap') }
       click_link 'Log In'
     end
   end
 
   def login_to_paypal
     wait_for { page.has_text?('Pay with PayPal') }
-    fill_in 'Email', with: 'pp@spreecommerce.com'
-    fill_in 'Password', with: 'thequickbrownfox'
+    fill_in 'email', with: 'pp@spreecommerce.com'
+    fill_in 'password', with: 'thequickbrownfox'
     click_button 'btnLogin'
   end
 
   def within_transaction_cart(container_class, expected_texts, unexpected_texts)
-    wait_for { !page.has_css?('div#preloaderSpinner') }
     wait_for { page.has_css?('span#transactionCart') }
+    wait_for { !page.has_css?('div#preloaderSpinner') }
+    wait_for { !page.has_css?('div#spinner') }
     find('span#transactionCart').click
 
     within(container_class) do
@@ -75,6 +78,7 @@ describe 'PayPal', js: true do
 
   def click_pay_now_button
     wait_for { page.has_button?('Pay Now') }
+    wait_for { page.has_css?('div#button') }
     click_button 'Pay Now'
   end
 
@@ -91,6 +95,7 @@ describe 'PayPal', js: true do
 
   def expect_successfully_processed_order
     wait_for { page.has_text?('Your order has been processed successfully') }
+    expect(page).to have_current_path('/webapps/hermes')
     expect(page).to have_content('Your order has been processed successfully')
   end
 
@@ -165,7 +170,7 @@ describe 'PayPal', js: true do
     stay_logged_in_for_faster_checkout
     within_transaction_cart('.cartContainer', ['$5 off', '$10 on'], [])
     click_pay_now_button
-    wait_for { page.has_text?('$5 off') }
+    wait_for { page.has_css?('[data-hook=order_details_adjustments]') }
     within('[data-hook=order_details_adjustments]') do
       expect(page).to have_content('$5 off')
       expect(page).to have_content('$10 on')
