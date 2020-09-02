@@ -1,6 +1,5 @@
 ---
 os: linux
-
 dist: bionic
 
 addons:
@@ -9,6 +8,7 @@ addons:
       - google-chrome
     packages:
       - google-chrome-stable
+
 services:
   - mysql
   - postgresql
@@ -16,8 +16,8 @@ services:
 language: ruby
 
 rvm:
-  - 2.6.6
-  - 2.7.1
+  - 2.5
+  - 2.6
 
 env:
   - DB=mysql
@@ -25,23 +25,25 @@ env:
 
 gemfile:
   - gemfiles/spree_3_7.gemfile
+  - gemfiles/spree_4_0.gemfile
   - gemfiles/spree_4_1.gemfile
   - gemfiles/spree_master.gemfile
 
 jobs:
   exclude:
-    - rvm: 2.7.1
+    - rvm: 2.6
       gemfile: gemfiles/spree_3_7.gemfile
-    - rvm: 2.6.6
+    - rvm: 2.5
+      gemfile: gemfiles/spree_4_0.gemfile
+    - rvm: 2.5
       gemfile: gemfiles/spree_4_1.gemfile
-    - rvm: 2.6.6
-      gemfile: gemfiles/spree_4_1.gemfile
-    - rvm: 2.6.6
-      gemfile: gemfiles/spree_master.gemfile
-    - rvm: 2.6.6
+    - rvm: 2.5
       gemfile: gemfiles/spree_master.gemfile
   allow_failures:
     - gemfile: gemfiles/spree_master.gemfile
+
+before_install:
+  - mysql -u root -e "GRANT ALL ON *.* TO 'travis'@'%';"
 
 before_script:
   - CHROME_MAIN_VERSION=`google-chrome-stable --version | sed -E 's/(^Google Chrome |\.[0-9]+ )//g'`
@@ -50,4 +52,5 @@ before_script:
   - unzip chromedriver_linux64.zip -d ~/bin
 
 script:
-  - bundle exec rake -t
+  - bundle exec rake test_app
+  - bundle exec rake spec

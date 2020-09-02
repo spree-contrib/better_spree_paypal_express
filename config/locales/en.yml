@@ -3,7 +3,7 @@ en:
   spree:
     paypal:
       already_refunded: "This payment has been refunded and no further action can be taken on it."
-      no_payment_via_admin_backend: "You cannot charge PayPal accounts through the admin backend at this time."
+      no_payment_via_admin_backend: "You cannot charge PayPal accounts through the admin back-end at this time."
       transaction: "PayPal Transaction"
       payer_id: "Payer ID"
       transaction_id: "Transaction ID"
