@@ -1,6 +1,4 @@
-//= require spree/frontend
-
-SpreePaypalExpress = {
+var SpreePaypalExpress = {
   updateSaveAndContinueVisibility: function() {
     if (this.isButtonHidden()) {
       $(this).trigger('hideSaveAndContinue')
