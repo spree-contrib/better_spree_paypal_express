@@ -1,5 +1,4 @@
-# coding: utf-8
-lib = File.expand_path('../lib/', __FILE__)
+lib = File.expand_path('lib', __dir__)
 $:.unshift lib unless $:.include?(lib)
 
 require 'spree_paypal_express/version'
@@ -15,7 +14,7 @@ Gem::Specification.new do |s|
   s.author       = 'Spree Commerce'
   s.email        = 'gems@spreecommerce.com'
   s.homepage     = 'http://www.spreecommerce.com'
-  s.license      = %q{BSD-3}
+  s.license      = 'BSD-3'
 
   s.files        = `git ls-files`.split("\n")
   s.test_files   = `git ls-files -- spec/*`.split("\n")
@@ -27,23 +26,6 @@ Gem::Specification.new do |s|
   s.add_dependency 'paypal-sdk-merchant'
   s.add_dependency 'spree_extension'
 
-  s.add_development_dependency 'capybara'
-  s.add_development_dependency 'capybara-screenshot'
-  s.add_development_dependency 'selenium-webdriver'
-  s.add_development_dependency 'webdrivers', '~> 4.1'
-  s.add_development_dependency 'coffee-rails'
-  s.add_development_dependency 'database_cleaner'
-  s.add_development_dependency 'factory_bot', '~> 4.7'
-  s.add_development_dependency 'ffaker'
-  s.add_development_dependency 'rspec-rails', '~> 4.0.0.beta2'
   s.add_development_dependency 'rspec-activemodel-mocks'
-  s.add_development_dependency 'sass-rails'
-  s.add_development_dependency 'simplecov'
-  s.add_development_dependency 'pry'
-  s.add_development_dependency 'require_all'
-  s.add_development_dependency 'pg'
-  s.add_development_dependency 'puma'
-  s.add_development_dependency 'mysql2'
-  s.add_development_dependency 'sqlite3'
-  s.add_development_dependency 'appraisal'
+  s.add_development_dependency 'spree_dev_tools'
 end

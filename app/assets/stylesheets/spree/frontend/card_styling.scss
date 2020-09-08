@@ -1,0 +1,37 @@
+@mixin button_styles {
+  vertical-align: top;
+  text-align: left;
+  width: 100%;
+  max-width: 332px;
+  display: inline-block;
+  padding: 9px 0;
+  text-align: center;
+  overflow: hidden;
+  text-decoration: none;
+  border-radius: 4px;
+}
+
+div#paypal_express_checkout {
+  margin-top: 10px;
+  text-align: center;
+
+  a#paypal_button {
+    @include button_styles;
+    margin: 7px 0 0 0;
+    background-color: #FEC349;
+
+    img {
+      position: relative;
+      width: 96px;
+      line-height: 0.5em;
+
+      &#paypal_logo_colour {
+        width: 90px;
+      }
+    }
+
+    &:hover {
+      background-color: #F2BA46;
+    }
+  }
+}

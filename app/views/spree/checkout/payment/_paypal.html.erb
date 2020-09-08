@@ -1,6 +1,15 @@
-
-<%= link_to(image_tag("https://www.paypal.com/en_US/i/btn/btn_xpressCheckout.gif"), paypal_express_url(:payment_method_id => payment_method.id), :method => :post, :id => "paypal_button") %>
+<div id="paypal_express_checkout">
+  <div>
+    <%= link_to paypal_express_url( payment_method_id: payment_method.id ),
+                                    method: :post,
+                                    id: "paypal_button" do %>
+      <%= render partial: 'spree/shared/paypal_color_logo', cached: true %>
+    <% end %>
+  </div>
+</div>
 
 <script>
-  SpreePaypalExpress.paymentMethodID = "<%= payment_method.id %>"  
- </script>
+  document.addEventListener("DOMContentLoaded", function() {
+    SpreePaypalExpress.paymentMethodID = "<%= payment_method.id %>"
+  })
+</script>
