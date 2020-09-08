@@ -23,7 +23,7 @@ SpreePaypalExpress = {
   }
 }
 
-$(document).ready(function() {
+document.addEventListener("DOMContentLoaded", function() {
   SpreePaypalExpress.updateSaveAndContinueVisibility();
   paymentMethods = $('div[data-hook="checkout_payment_step"] input[type="radio"]').click(function (e) {
     SpreePaypalExpress.updateSaveAndContinueVisibility();
