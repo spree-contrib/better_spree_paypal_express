@@ -23,7 +23,8 @@ SpreePaypalExpress = {
   }
 }
 
-$(document).ready(function() {
+Spree.ready(function() {
+  SpreePaypalExpress.paymentMethodID = $('#paypal_button').data('payment-method-id');
   SpreePaypalExpress.updateSaveAndContinueVisibility();
   paymentMethods = $('div[data-hook="checkout_payment_step"] input[type="radio"]').click(function (e) {
     SpreePaypalExpress.updateSaveAndContinueVisibility();
