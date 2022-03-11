@@ -17,13 +17,18 @@ SpreePaypalExpress = {
   },
   hideSaveAndContinue: function() {
     $("#checkout_form_payment [data-hook=buttons]").hide();
+    $("#checkout_form_payment").data('hidden-by-payment-method-id', SpreePaypalExpress.paymentMethodID);
   },
   showSaveAndContinue: function() {
-    $("#checkout_form_payment [data-hook=buttons]").show();
+    if (typeof ($("#checkout_form_payment").data('hidden-by-payment-method-id')) === 'undefined' || $("#checkout_form_payment").data('hidden-by-payment-method-id') == SpreePaypalExpress.paymentMethodID) {
+      $("#checkout_form_payment [data-hook=buttons]").show();
+      $("#checkout_form_payment").removeData('hidden-by-payment-method-id');
+    }
   }
 }
 
-$(document).ready(function() {
+Spree.ready(function() {
+  SpreePaypalExpress.paymentMethodID = $('#paypal_button').data('payment-method-id');
   SpreePaypalExpress.updateSaveAndContinueVisibility();
   paymentMethods = $('div[data-hook="checkout_payment_step"] input[type="radio"]').click(function (e) {
     SpreePaypalExpress.updateSaveAndContinueVisibility();
