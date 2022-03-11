@@ -17,9 +17,13 @@ SpreePaypalExpress = {
   },
   hideSaveAndContinue: function() {
     $("#checkout_form_payment [data-hook=buttons]").hide();
+    $("#checkout_form_payment").data('hidden-by-payment-method-id', SpreePaypalExpress.paymentMethodID);
   },
   showSaveAndContinue: function() {
-    $("#checkout_form_payment [data-hook=buttons]").show();
+    if (typeof ($("#checkout_form_payment").data('hidden-by-payment-method-id')) === 'undefined' || $("#checkout_form_payment").data('hidden-by-payment-method-id') == SpreePaypalExpress.paymentMethodID) {
+      $("#checkout_form_payment [data-hook=buttons]").show();
+      $("#checkout_form_payment").removeData('hidden-by-payment-method-id');
+    }
   }
 }
 
